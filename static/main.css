@@ -1,0 +1,163 @@
+html body {
+color: #000;
+background: #fefefe;
+font-family: 'Quicksand', Arial, sans-serif;
+}
+
+h1, h2, h3, h4, small {
+color: #096;
+text-align: center;
+}
+
+body {
+background: #fff !important;
+}
+
+p {
+line-height: 1.5em;
+}
+
+body > section {
+height: 100%;
+width: 100%;
+}
+
+section > div.hero {
+background: url('/static/img/geometry.png'); 
+width: 100%;
+display: block;
+}
+
+section#about p, section#about dl, section#about small {
+display: block;
+max-width: 640px;
+padding: 5px;
+margin: 0 auto;
+}
+
+footer {
+display: block;
+width: 100%;
+min-width:320px;
+max-width:960px;
+margin: 0 auto;
+margin-top: -50px;
+}
+
+div.modal {
+display: block;
+background: #fff;
+border-radius: 5px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+padding: 15px;
+margin: 0 auto;
+width: 80%;
+}
+
+img.logo {
+display:block; 
+margin: 0 auto;
+}
+
+div.halfling {
+position: relative; 
+display: inline-block; 
+width: 48%;
+}
+
+div.fulling {
+display: block; 
+position: relative; 
+top: -240px; 
+left: -60px; 
+width: 50%;
+}
+
+div.halfling.right {
+float: right;
+}
+
+div.halfling img.leftImage {
+position: relative; 
+float: right; 
+right: -25px; 
+top: -50px;
+}
+
+div.halfling.right img.rightImage {
+position: relative; 
+left: -25px; 
+top: -50px;
+}
+
+.wordText {
+float:right; 
+color: #333; 
+font-size: 4em; 
+text-align: center; 
+margin: 0 auto;
+}
+
+img.main {
+border-radius: 100%;
+-moz-border-radius: 100%;
+-webkit-border-radius: 100%;
+-khtml-border-radius: 100%;
+}
+
+a.image {
+cursor: pointer;
+}
+
+a:not(.image) {
+text-decoration: none !important;
+color: #333;
+border-bottom: 1px solid #333;
+}
+
+a:not(.image):hover {
+color: #096;
+border-bottom: 1px solid #096;
+}
+
+.pure-g > div {
+box-sizing: border-box; 
+}
+.sidebar {
+padding: 0.5em; 
+border-right: 2px solid #777;
+}
+.main {
+padding: 0.75em 0.5em; 
+}
+	
+#start:hover img{
+	-webkit-filter: blur(2px);
+}
+
+button {
+border: none !important;
+height: 45px;
+background: #096 ;
+border-radius: 3px;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+-o-border-radius: 3px;
+color: #fff;
+font-size: 0.7em;
+line-height: 1em;
+cursor: pointer;
+transition: 0.25s;
+-webkit-transition: 0.25s;
+-moz-transition: 0.25s;
+-o-transition: 0.25s;
+}
+
+button:hover {
+background: #09c;
+}
+
+img.profile {
+-webkit-filter: grayscale(100%);
+}

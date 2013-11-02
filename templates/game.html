@@ -1,0 +1,119 @@
+<html>
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="/static/main.css">
+	<title>OBOERO 覚えろ</title>
+	<link rel="icon" href="/static/img/favicon.ico?v=2">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1">
+	<meta name="description" content="OBOERO! Verb Conjugator" />
+	<meta name="author" content="kelvintaywl@gmail.com" />
+</head>
+<body>
+	<section id="splash">
+		<div class="hero">
+			<img class="logo" src="/static/img/oboero_min.png">
+			<div style="display: block; width: 100%; margin: 0 auto">
+				<div class="halfling">
+					<a href="about" class="image"><img class="leftImage" src="/static/img/wordcount_min.png"></a>
+				</div>
+				<div class="halfling right">
+					<a class="image" id="start"><img class="rightImage" src="/static/img/start_min.png"></a>
+				</div>
+				<div class="fulling">
+					<span class="wordText">{{total}}</span>
+				</div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+		<footer class="main">
+			<div class="960">
+				<small>What is Oboero? 『覚えろ』は　何ですか</small><p><a href="http://www.tinyurl.com/kelvintaywl">Kelvin Tay</a> built <a href="about">OBOERO</a> whilst cursing at the number of <strong>verb conjugations</strong> Japanese language learners need to commit to memory. He hopes that this mini-game helps Gaijins get better at Nihongo.<br><a href="about" class="image"><button>Read More!</button></a></p>
+			</div>
+		</footer>
+	</section>
+	<section id="game">
+		<h1>Welcome, Hero.</h1>
+		<h2>Your Score: <span id="currentScore">-1</span></h2>
+		{% for word in testVerbs %}
+				<form class="pure-form">
+	    			<fieldset>
+	        			<legend>Enter the {{word['groupType']}} for the word {{word['jap']}}ます</legend>
+	        			<input class="answer" type="text" data-answer="{{word['answer']}}" placeholder="{{word['answer']}}">
+	        			<button class="submitButton" type="submit" class="pure-button pure-button-primary">Submit</button>
+	    			</fieldset>
+					<small>{{word['eng']}}</small>
+				</form>
+				<hr>
+				{% endfor %}
+	</section>
+	<!--
+	<section id="list">
+		<ul>
+			{% for tr in parsedHTML %}
+			<li>{{tr['jap']}}ます<small>{{tr['group']}}</small>
+				<ul>
+					<li>PLAIN: {{tr['plain']}}</li>
+					<li>NAI: {{tr['nai']}}</li>
+					<li>TE: {{tr['te']}}</li>
+					<li>COND: {{tr['conditional']}}</li>
+				</ul>
+			
+			</li>
+			{% endfor %}
+		</ul>
+	</section>
+-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script>
+	currentScore = -1;
+	$(document).ready(function(){
+		$('section:not("#splash")').hide();
+		$('#start').click(function(){
+			$('section#game').show();
+			$(this).scrollTo( $('section#game').offset().top, 200);
+			$('section#splash').fadeOut("fast");
+			//check for local storage
+			if(supports_html5_storage()){
+				currentScore = localStorage['oboeroScore']? parseInt(localStorage['oboeroScore']) : 0;
+				//update char avatar
+				$('#currentScore').text(currentScore);
+			};
+			
+		});		
+		$('button.submitButton').click(function(){
+			textInput = $(this).siblings('input.answer').val();
+			answer = $(this).siblings('input.answer').attr('data-answer');
+			if(textInput == answer){
+				updateScore(1);
+				alert('CONGRATS');
+			}
+			else{
+				alert('LAME');
+			}
+		});
+	});
+	
+	$.fn.scrollTo = function(loc, speed){
+		var ht = parseInt(loc);
+		$('body,html').animate({scrollTop: ht}, speed);
+	
+	}
+	
+	function supports_html5_storage() {
+	  try {
+	    return 'localStorage' in window && window['localStorage'] !== null;
+	  } catch (e) {
+	    return false;
+	  }
+	}
+	
+	function updateScore(incre){
+		currentScore += parseInt(incre);
+		$('#currentScore').text(currentScore);
+		localStorage['oboeroScore'] = currentScore;
+		
+	}
+	</script>
+</body>
+</html>
