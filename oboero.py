@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 import random, json, urllib2
 
 app = Flask(__name__)
@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 #dictionary of verbs
 
-#verbs = [ 
+#verbs = [
                     #testing
 #            {'jap': u'遊び', 'rom': 'asobi', 'eng': 'play', 'group': 1},
 #            {'jap': u'行き', 'rom': 'iki', 'eng': 'go', 'group': 1},
@@ -34,7 +34,7 @@ formTable = {
             u"び": [u'ば', u'び', u'ぶ', u'べ', u'ぼ'],
             u"し": [u'さ', u'し', u'す', u'せ', u'そ']
 }
-            
+
 
 
 
@@ -72,15 +72,15 @@ def toT(verb):
             newChar = u'ん'
         else:
             newChar = u'し'
-        return (verb['jap'][:-1] + newChar) 
+        return (verb['jap'][:-1] + newChar)
     else:
         return verb['jap']
 
-            
+
 def toNai(verb):
     if verb['group'] == 1:
         newChar = formTable[verb['jap'][-1:]][0] + u'ない' # a letter
-        return (verb['jap'][:-1] + newChar) 
+        return (verb['jap'][:-1] + newChar)
     elif verb['group'] == 2:
         return (verb['jap'] + u'ない')
     else:
@@ -107,7 +107,7 @@ def toImperative(verb):
 def toVolitional(verb):
     if verb['group'] == 1:
         newChar = formTable[verb['jap'][-1:]][4] + u'う' # o letter
-        return (verb['jap'][:-1] + newChar) 
+        return (verb['jap'][:-1] + newChar)
     elif verb['group'] == 2:
         return (verb['jap'] + u'よう')
     else:
@@ -130,29 +130,57 @@ def toConditional(verb):
             return (verb['jap'][:-1] + u'くれば')
         else:
             return (verb['jap'][:-1] + u'すれば')
-            
+
+def toCausative(verb):
+    if verb['group'] == 1:
+        return (toNai(verb)[:-2] + u'せる')
+    elif verb['group'] == 2:
+        return (toPlain(verb)[:-1] + u'させる')
+    else:
+        if u'来' in verb:
+            return u'こさせる'
+        else:
+            return u'させる'
+
+def toPassive(verb):
+    if verb['group'] == 1:
+        return toNai(verb)[:-2] + u'れる'
+    elif verb['group'] == 2:
+        return toPlain(verb)[:-1] + u'られる'
+    else:
+        if u'来' in verb:
+            return u'来られる'
+        else:
+            return u'される'
+
 def getWord(verb, rand):
     answer = '';
-    if rand == 6:
-        answer = toConditional(verb)
+    if rand == 8:
+        return toCausative(verb)
+    elif rand == 7:
+        return toPassive(verb)
+    elif rand == 6:
+        return toConditional(verb)
     elif rand == 5:
-        answer = toVolitional(verb)
+        return toVolitional(verb)
     elif rand == 4:
-        answer = toImperative(verb)
+        return toImperative(verb)
     elif rand == 3:
-        answer = toProhibitive(verb)
+        return toProhibitive(verb)
     elif rand == 2:
-        answer = toNai(verb)
+        return toNai(verb)
     elif rand == 1:
-        answer = toTe(verb)
+        return toTe(verb)
     else:
-        answer = toPlain(verb)
-    
-    return answer
+        return toPlain(verb)
 
 def getForm(num):
     verbForm = '';
-    if num == 6:
+    if num == 8:
+        return 'causative(saseru)'
+    if num == 7:
+        return 'passive(sareru)'
+    elif num == 6:
         return 'conditional(sureba)'
     elif num == 5:
         return 'volitional(shiyo-)'
@@ -181,53 +209,45 @@ def game():
         items = data['feed']['entry']
         for item in items:
             japVerb = item['gsx$wordmasu']['$t']
-            verb = {"jap":japVerb, "group":int(item['gsx$group']['$t']), "eng":item['gsx$english']['$t']}
-            
-            #plain = toPlain(verb)
-            #nai = toNai(verb)
-            #te = toTe(verb)
-            #conditional = toConditional(verb)
-            #verb.update({'plain': plain, 'nai': nai, "te": te, "conditional": conditional})
+            verb = {"jap":japVerb, "group":int(item['gsx$group']['$t'])}
+            plain = toPlain(verb)
+            nai = toNai(verb)
+            te = toTe(verb)
+            conditional = toConditional(verb)
+            prohibitive = toProhibitive(verb)
+            imperative = toImperative(verb)
+            volitional = toVolitional(verb)
+            passive = toPassive(verb)
+            causative = toCausative(verb)
+            verb.update({'plain': plain,
+                         'nai': nai,
+                         'te': te,
+                         'conditional': conditional,
+                         'prohibitive': prohibitive,
+                         'imperative': imperative,
+                         'volitional': volitional,
+                         'passive': passive,
+                         'causative': causative})
             htmlVerbs.append(verb)
-            
-    print 'hello'
-            
-    testVerbs = []
-    count = 1
-    
-    while len(htmlVerbs) >= 1:
-        rand = random.randint(0, len(htmlVerbs)-1)
-        word = htmlVerbs.pop(rand)
-        
-        if word:
-            ran = random.randint(0,6)
-            word['groupType'] = getForm(ran)
-            word['answer'] = getWord(word, ran)
-            testVerbs.append(word)
-    
-    return render_template('game.html', total=totalWords, testVerbs=testVerbs)
-    
+
+    print len(htmlVerbs)
+
+    rand = random.randint(0, len(htmlVerbs)-1)
+    testWord = htmlVerbs[rand]
+    ran = random.randint(0,8)
+    testWord['groupType'] = getForm(ran)
+    testWord['answer'] = getWord(testWord, ran)
+
+    return render_template('game.html', parsedHTML=htmlVerbs, total=totalWords, testWord=testWord)
+
 @app.route('/about')
 def about():
     return render_template('about.html')
-    
+
 @app.route('/search')
 def search():
-    verb = request.args.get('word')
-    group = request.args.get('group')
-    print verb
-    verb = {"jap":verb, "group":int(group)}
-    print verb
-    plain = toPlain(verb)
-    te = toTe(verb)
-    nai = toNai(verb)
-    conditional = toConditional(verb)
-    prohibitive = toProhibitive(verb)
-    imperative = toImperative(verb)
-    volitional = toVolitional(verb)
-    verb.update({'plain':plain, 'te':te, 'nai':nai, 'conditional':conditional, 'prohibitive':prohibitive, 'imperative':imperative, 'volitional':volitional})
-    return render_template('search.html', verb=verb)
-    
+    return render_template('search.html')
+
 #web service
 @app.route('/api/v1.0/verbs', methods = ['GET'])
 def get_verbs():
@@ -247,10 +267,24 @@ def get_verbs():
             plain = toPlain(verb)
             nai = toNai(verb)
             te = toTe(verb)
-            verb.update({'plain': plain, 'nai': nai, 'te': te})
+            conditional = toConditional(verb)
+            prohibitive = toProhibitive(verb)
+            imperative = toImperative(verb)
+            volitional = toVolitional(verb)
+            passive = toPassive(verb)
+            causative = toCausative(verb)
+            verb.update({'plain': plain,
+                         'nai': nai,
+                         'te': te,
+                         'conditional': conditional,
+                         'prohibitive': prohibitive,
+                         'imperative': imperative,
+                         'volitional': volitional,
+                         'passive': passive,
+                         'causative': causative})
             htmlVerbs.append(verb)
-            
+
     return jsonify({'verbs': htmlVerbs})
-    
+
 if __name__ == '__main__':
     app.run()
