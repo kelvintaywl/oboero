@@ -286,5 +286,9 @@ def get_verbs():
 
     return jsonify({'verbs': htmlVerbs})
 
+#test
+@app.route('/tor')
+def tor():
+    return render_template('tor.html')
 if __name__ == '__main__':
     app.run()
