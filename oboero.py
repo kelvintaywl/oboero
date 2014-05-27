@@ -197,48 +197,12 @@ def getForm(num):
 
 @app.route('/')
 def game():
-    #Google Spreadsheet Entrypoint URL: https://docs.google.com/spreadsheet/ccc?key=0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE#gid=0
-    ssURL = ["https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/1/public/values?alt=json", "https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/3/public/values?alt=json"]
-    #json.feed.entry is array = json.feed.entry[0].gsx$wordmasu , json.feed.entry[0].gsx$group
-    htmlVerbs = []
-    totalWords = 0
-    for url in ssURL:
-        content = urllib2.urlopen(url).read()
-        data = json.loads(content)
-        totalWords += int(data['feed']['openSearch$totalResults']['$t'])
-        items = data['feed']['entry']
-        for item in items:
-            japVerb = item['gsx$wordmasu']['$t']
-            verb = {"jap":japVerb, "group":int(item['gsx$group']['$t'])}
-            plain = toPlain(verb)
-            nai = toNai(verb)
-            te = toTe(verb)
-            conditional = toConditional(verb)
-            prohibitive = toProhibitive(verb)
-            imperative = toImperative(verb)
-            volitional = toVolitional(verb)
-            passive = toPassive(verb)
-            causative = toCausative(verb)
-            verb.update({'plain': plain,
-                         'nai': nai,
-                         'te': te,
-                         'conditional': conditional,
-                         'prohibitive': prohibitive,
-                         'imperative': imperative,
-                         'volitional': volitional,
-                         'passive': passive,
-                         'causative': causative})
-            htmlVerbs.append(verb)
-
-    print len(htmlVerbs)
-
-    rand = random.randint(0, len(htmlVerbs)-1)
-    testWord = htmlVerbs[rand]
-    ran = random.randint(0,8)
-    testWord['groupType'] = getForm(ran)
-    testWord['answer'] = getWord(testWord, ran)
-
-    return render_template('game.html', parsedHTML=htmlVerbs, total=totalWords, testWord=testWord)
+    verbs = _get_words_from_spreadsheets()
+    for verb in verbs:
+        ran = random.randint(0,8)
+        verb['groupType'] = getForm(ran)
+        verb['answer'] = getWord(verb, ran)
+    return render_template('game.html', verbs=verbs, total=len(verbs))
 
 @app.route('/about')
 def about():
@@ -249,42 +213,42 @@ def search():
     return render_template('search.html')
 
 #web service
-@app.route('/api/v1.0/verbs', methods = ['GET'])
+@app.route('/api/verbs')
 def get_verbs():
+    verbs = _get_words_from_spreadsheets()
+    return jsonify({'verbs': verbs})
+
+
+@app.route('/api/verbs/random')
+def get_random_verb():
+    verbs = _get_words_from_spreadsheets()
+    verb = verbs[random.randint(0,len(verbs)-1)]
+    return jsonify({'verb': verb})
+
+def _get_words_from_spreadsheets():
     #Google Spreadsheet Entrypoint URL: https://docs.google.com/spreadsheet/ccc?key=0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE#gid=0
-    ssURL = ["https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/1/public/values?alt=json", "https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/3/public/values?alt=json"]
+    spreadsheet_urls = ["https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/1/public/values?alt=json", "https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/3/public/values?alt=json"]
     #json.feed.entry is array = js
-    htmlVerbs = []
-    totalWords = 0
-    for url in ssURL:
+    verbs = []
+    for url in spreadsheet_urls:
         content = urllib2.urlopen(url).read()
         data = json.loads(content)
-        totalWords += int(data['feed']['openSearch$totalResults']['$t'])
         items = data['feed']['entry']
         for item in items:
             japVerb = item['gsx$wordmasu']['$t']
             verb = {"jap":japVerb, "group":int(item['gsx$group']['$t'])}
-            plain = toPlain(verb)
-            nai = toNai(verb)
-            te = toTe(verb)
-            conditional = toConditional(verb)
-            prohibitive = toProhibitive(verb)
-            imperative = toImperative(verb)
-            volitional = toVolitional(verb)
-            passive = toPassive(verb)
-            causative = toCausative(verb)
-            verb.update({'plain': plain,
-                         'nai': nai,
-                         'te': te,
-                         'conditional': conditional,
-                         'prohibitive': prohibitive,
-                         'imperative': imperative,
-                         'volitional': volitional,
-                         'passive': passive,
-                         'causative': causative})
-            htmlVerbs.append(verb)
+            verb.update({'plain': toPlain(verb),
+                         'nai': toNai(verb),
+                         'te': toTe(verb),
+                         'conditional': toConditional(verb),
+                         'prohibitive': toProhibitive(verb),
+                         'imperative': toImperative(verb),
+                         'volitional': toVolitional(verb),
+                         'passive': toPassive(verb),
+                         'causative': toCausative(verb)})
+            verbs.append(verb)
 
-    return jsonify({'verbs': htmlVerbs})
+    return verbs
 
 if __name__ == '__main__':
     app.run()
