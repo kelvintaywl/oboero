@@ -1,27 +1,39 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, jsonify
-import random, json, urllib2
+from flask import Blueprint, render_template, jsonify
 
-app = Flask(__name__)
+blueprint = Blueprint('index', __name__)
 
 
-#dictionary of verbs
+@blueprint.route('/')
+def game():
+    verbs = _get_words_from_spreadsheets()
+    for verb in verbs:
+        ran = random.randint(0,8)
+        verb['groupType'] = getForm(ran)
+        verb['answer'] = getWord(verb, ran)
+    return render_template('game.html', verbs=verbs, total=len(verbs))
 
-#verbs = [
-                    #testing
-#            {'jap': u'遊び', 'rom': 'asobi', 'eng': 'play', 'group': 1},
-#            {'jap': u'行き', 'rom': 'iki', 'eng': 'go', 'group': 1},
-#            {'jap': u'飲み', 'rom': 'nomi', 'eng': 'drink', 'group': 1},
-#            {'jap': u'待ち', 'rom': 'machi', 'eng': 'wait', 'group': 1},
-#            {'jap': u'話し', 'rom': 'hanashi', 'eng': 'talk', 'group': 1},
-#            {'jap': u'食べ', 'rom': 'tabe', 'eng': 'eat', 'group': 2},
-#            {'jap': u'起き', 'rom': 'oki', 'eng': 'wake up', 'group': 2},
-#            {'jap': u'し', 'rom': 'shi', 'eng': 'do', 'group': 3},
-#            {'jap': u'来', 'rom': 'ki', 'eng': 'come', 'group': 3},
-#            {'jap': u'持って来', 'rom': 'motteki', 'eng': 'bring', 'group': 3},
-#            {'jap': u'勉強し', 'rom': 'benkyoshi', 'eng': 'study', 'group': 3}
-#]
+@blueprint.route('/about')
+def about():
+    return render_template('about.html')
+
+@blueprint.route('/search')
+def search():
+    return render_template('search.html')
+
+#web service
+@blueprint.route('/api/verbs')
+def get_verbs():
+    verbs = _get_words_from_spreadsheets()
+    return jsonify({'verbs': verbs})
+
+
+@blueprint.route('/api/verbs/random')
+def get_random_verb():
+    verbs = _get_words_from_spreadsheets()
+    verb = verbs[random.randint(0,len(verbs)-1)]
+    return jsonify({'verb': verb})
 
 formTable = {
                     # a - i - u - e - o
@@ -194,61 +206,3 @@ def getForm(num):
         return 'te(shite)'
     else:
         return 'plain(suru)'
-
-@app.route('/')
-def game():
-    verbs = _get_words_from_spreadsheets()
-    for verb in verbs:
-        ran = random.randint(0,8)
-        verb['groupType'] = getForm(ran)
-        verb['answer'] = getWord(verb, ran)
-    return render_template('game.html', verbs=verbs, total=len(verbs))
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/search')
-def search():
-    return render_template('search.html')
-
-#web service
-@app.route('/api/verbs')
-def get_verbs():
-    verbs = _get_words_from_spreadsheets()
-    return jsonify({'verbs': verbs})
-
-
-@app.route('/api/verbs/random')
-def get_random_verb():
-    verbs = _get_words_from_spreadsheets()
-    verb = verbs[random.randint(0,len(verbs)-1)]
-    return jsonify({'verb': verb})
-
-def _get_words_from_spreadsheets():
-    #Google Spreadsheet Entrypoint URL: https://docs.google.com/spreadsheet/ccc?key=0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE#gid=0
-    spreadsheet_urls = ["https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/1/public/values?alt=json", "https://spreadsheets.google.com/feeds/list/0As-5mxk3uTUOdDJIbDJfNng3aGJiQW1Ha21OUUhqaUE/3/public/values?alt=json"]
-    #json.feed.entry is array = js
-    verbs = []
-    for url in spreadsheet_urls:
-        content = urllib2.urlopen(url).read()
-        data = json.loads(content)
-        items = data['feed']['entry']
-        for item in items:
-            japVerb = item['gsx$wordmasu']['$t']
-            verb = {"jap":japVerb, "group":int(item['gsx$group']['$t'])}
-            verb.update({'plain': toPlain(verb),
-                         'nai': toNai(verb),
-                         'te': toTe(verb),
-                         'conditional': toConditional(verb),
-                         'prohibitive': toProhibitive(verb),
-                         'imperative': toImperative(verb),
-                         'volitional': toVolitional(verb),
-                         'passive': toPassive(verb),
-                         'causative': toCausative(verb)})
-            verbs.append(verb)
-
-    return verbs
-
-if __name__ == '__main__':
-    app.run()
