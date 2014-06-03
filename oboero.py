@@ -252,3 +252,4 @@ def _get_words_from_spreadsheets():
 
 if __name__ == '__main__':
     app.run()
+
