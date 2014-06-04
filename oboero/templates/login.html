@@ -1,0 +1,11 @@
+{% extends "_layout/_base.html" %}
+{% block content %}
+<form class="pure-form" action="" method="post">
+	<input type="hidden" name="next_page" value="{{next_page}}">
+    <fieldset class="pure-group">
+        <input type="email" name="email" class="pure-input-1-2" placeholder="email">
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1-2 pure-button-primary">Sign in</button>
+</form>
+{% endblock %}

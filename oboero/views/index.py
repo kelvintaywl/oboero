@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request, redirect, url_for
 from flask.blueprints import Blueprint
+from flask.ext.login import login_user, logout_user, current_user
 import random, json, urllib2
-
+from oboero.models.user import User
 
 blueprint = Blueprint('index', __name__)
 
@@ -23,6 +24,24 @@ def about():
 @blueprint.route('/search')
 def search():
     return render_template('search.html')
+
+@blueprint.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        email = request.form['email']
+        user = User(email)
+        login_user(user)
+        next_url = request.form.get('next_page')
+        print(next_url)
+        print('***')
+        if not next_url:
+            return redirect(url_for('index.game'))
+        else:
+            next_url = urllib2.unquote(next_url)
+            print(next_url)
+            return redirect(url_for(next_url))
+    else:
+        return render_template('login.html')
 
 #web service
 @blueprint.route('/api/verbs')

@@ -29,172 +29,132 @@ class VerbService(object):
 
 
 
-def toPlain(verb):
-    #print verb
-    if verb['group'] == 1:
-        lastChar = verb['jap'][-1:]
-        newChar = formTable[lastChar][2] # u letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'る')
-    else:
-        ki = u'来'
-        shi = u'し'
-        if verb['jap'].find(ki) > -1:
-            return (verb['jap'][:-1] + u'くる')
+    def toPlain(self, verb):
+        #print verb
+        if verb['group'] == 1:
+            lastChar = verb['jap'][-1:]
+            newChar = formTable[lastChar][2] # u letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
+            return (verb['jap'] + u'る')
         else:
-            return (verb['jap'][:-1] + u'する')
-def toTe(verb):
-    front = toT(verb)
-    return (front + u'で') if verb['jap'][-1:] in [u'ぎ', u'び', u'み'] else (front + u'て')
-
-def toT(verb):
-    if verb['group'] == 1:
-        lastChar = verb['jap'][-1:]
-        newChar = lastChar
-        if lastChar in [u'い', u'ち', u'り']:
-            newChar = u'っ'
-        elif lastChar in [u'き', u'ぎ']:
-            if verb['jap'] == u'行き':
-                newChar = u'っ'
+            ki = u'来'
+            shi = u'し'
+            if verb['jap'].find(ki) > -1:
+                return (verb['jap'][:-1] + u'くる')
             else:
-                newChar = u'い'
-        elif lastChar in [u'び', u'み']:
-            newChar = u'ん'
+                return (verb['jap'][:-1] + u'する')
+    
+    def toTe(self, verb):
+        front = toT(verb)
+        return (front + u'で') if verb['jap'][-1:] in [u'ぎ', u'び', u'み'] else (front + u'て')
+
+    def toT(self, verb):
+        if verb['group'] == 1:
+            lastChar = verb['jap'][-1:]
+            newChar = lastChar
+            if lastChar in [u'い', u'ち', u'り']:
+                newChar = u'っ'
+            elif lastChar in [u'き', u'ぎ']:
+                if verb['jap'] == u'行き':
+                    newChar = u'っ'
+                else:
+                    newChar = u'い'
+            elif lastChar in [u'び', u'み']:
+                newChar = u'ん'
+            else:
+                newChar = u'し'
+            return (verb['jap'][:-1] + newChar)
         else:
-            newChar = u'し'
-        return (verb['jap'][:-1] + newChar)
-    else:
-        return verb['jap']
+            return verb['jap']
 
 
-def toNai(verb):
-    if verb['group'] == 1:
-        newChar = formTable[verb['jap'][-1:]][0] + u'ない' # a letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'ない')
-    else:
-        if verb['jap'][-1:] == u'来':
-            return (verb['jap'][:-1] + u"こない")
-        else: #group3 shimasu verb
+    def toNai(self, verb):
+        if verb['group'] == 1:
+            newChar = formTable[verb['jap'][-1:]][0] + u'ない' # a letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
             return (verb['jap'] + u'ない')
-
-def toProhibitive(verb): #dependency: toPlain()
-    return (toPlain(verb) + u'な')
-
-def toImperative(verb):
-    if verb['group'] == 1:
-        newChar = formTable[verb['jap'][-1:]][3] # e letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'ろ')
-    else:
-        if verb['jap'][-1:] == u'来':
-            return (verb['jap'][:-1] + u"こい")
         else:
-            return (verb['jap'] + u"ろ")
+            if verb['jap'][-1:] == u'来':
+                return (verb['jap'][:-1] + u"こない")
+            else: #group3 shimasu verb
+                return (verb['jap'] + u'ない')
 
-def toVolitional(verb):
-    if verb['group'] == 1:
-        newChar = formTable[verb['jap'][-1:]][3] + u'う' # o letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'よう')
-    else:
-        if verb['jap'][-1:] == u'来':
-            return (verb['jap'][:-1] + u"こよう")
-        else: #group3 shimasu verb
+    def toProhibitive(self, verb): #dependency: toPlain()
+        return (toPlain(verb) + u'な')
+
+    def toImperative(self, verb):
+        if verb['group'] == 1:
+            newChar = formTable[verb['jap'][-1:]][3] # e letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
+            return (verb['jap'] + u'ろ')
+        else:
+            if verb['jap'][-1:] == u'来':
+                return (verb['jap'][:-1] + u"こい")
+            else:
+                return (verb['jap'] + u"ろ")
+
+    def toVolitional(self, verb):
+        if verb['group'] == 1:
+            newChar = formTable[verb['jap'][-1:]][3] + u'う' # o letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
             return (verb['jap'] + u'よう')
-
-def toPotential(verb):
-    if verb['group'] == 1:
-        newChar = formTable[verb['jap'][-1:]][3] + u'る' # e letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'られる')
-    else:
-        if verb['jap'][-1:] == u'来':
-            return (verb['jap'][:-1] + u"来られる")
-        else: #group3 shimasu verb
-            return (verb['jap'] + u'できる')
-
-def toConditional(verb):
-    if verb['group'] == 1:
-        lastChar = verb['jap'][-1:]
-        newChar = formTable[lastChar][3] + u'ば' # e letter
-        return (verb['jap'][:-1] + newChar)
-    elif verb['group'] == 2:
-        return (verb['jap'] + u'れば')
-    else:
-        ki = u'来'
-        shi = u'し'
-        if verb['jap'].find(ki) > -1:
-            return (verb['jap'][:-1] + u'くれば')
         else:
-            return (verb['jap'][:-1] + u'すれば')
+            if verb['jap'][-1:] == u'来':
+                return (verb['jap'][:-1] + u"こよう")
+            else: #group3 shimasu verb
+                return (verb['jap'] + u'よう')
 
-def toCausative(verb):
-    if verb['group'] == 1:
-        return (toNai(verb)[:-2] + u'せる')
-    elif verb['group'] == 2:
-        return (toPlain(verb)[:-1] + u'させる')
-    else:
-        if u'来' in verb:
-            return u'こさせる'
+    def toPotential(self, verb):
+        if verb['group'] == 1:
+            newChar = formTable[verb['jap'][-1:]][3] + u'る' # e letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
+            return (verb['jap'] + u'られる')
         else:
-            return u'させる'
+            if verb['jap'][-1:] == u'来':
+                return (verb['jap'][:-1] + u"来られる")
+            else: #group3 shimasu verb
+                return (verb['jap'] + u'できる')
 
-def toPassive(verb):
-    if verb['group'] == 1:
-        return toNai(verb)[:-2] + u'れる'
-    elif verb['group'] == 2:
-        return toPlain(verb)[:-1] + u'られる'
-    else:
-        if u'来' in verb:
-            return u'来られる'
+    def toConditional(self, verb):
+        if verb['group'] == 1:
+            lastChar = verb['jap'][-1:]
+            newChar = formTable[lastChar][3] + u'ば' # e letter
+            return (verb['jap'][:-1] + newChar)
+        elif verb['group'] == 2:
+            return (verb['jap'] + u'れば')
         else:
-            return u'される'
+            ki = u'来'
+            shi = u'し'
+            if verb['jap'].find(ki) > -1:
+                return (verb['jap'][:-1] + u'くれば')
+            else:
+                return (verb['jap'][:-1] + u'すれば')
 
-def getWord(verb, rand):
-    answer = '';
-    if rand == 8:
-        return toCausative(verb)
-    elif rand == 7:
-        return toPassive(verb)
-    elif rand == 6:
-        return toConditional(verb)
-    elif rand == 5:
-        return toVolitional(verb)
-    elif rand == 4:
-        return toImperative(verb)
-    elif rand == 3:
-        return toProhibitive(verb)
-    elif rand == 2:
-        return toNai(verb)
-    elif rand == 1:
-        return toTe(verb)
-    else:
-        return toPlain(verb)
+    def toCausative(self, verb):
+        if verb['group'] == 1:
+            return (toNai(verb)[:-2] + u'せる')
+        elif verb['group'] == 2:
+            return (toPlain(verb)[:-1] + u'させる')
+        else:
+            if u'来' in verb:
+                return u'こさせる'
+            else:
+                return u'させる'
 
-def getForm(num):
-    verbForm = '';
-    if num == 8:
-        return 'causative(saseru)'
-    if num == 7:
-        return 'passive(sareru)'
-    elif num == 6:
-        return 'conditional(sureba)'
-    elif num == 5:
-        return 'volitional(shiyo-)'
-    elif num == 4:
-        return 'imperative(shiro)'
-    elif num == 3:
-        return 'prohibitive(suruna)'
-    elif num == 2:
-        return 'negative(shinai)'
-    elif num == 1:
-        return 'te(shite)'
-    else:
-        return 'plain(suru)'
+    def toPassive(self, verb):
+        if verb['group'] == 1:
+            return toNai(verb)[:-2] + u'れる'
+        elif verb['group'] == 2:
+            return toPlain(verb)[:-1] + u'られる'
+        else:
+            if u'来' in verb:
+                return u'来られる'
+            else:
+                return u'される'
+
 

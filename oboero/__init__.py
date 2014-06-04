@@ -1,19 +1,45 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, url_for
 import random, json, urllib2
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.login import LoginManager, current_user
 
 db = SQLAlchemy()
+lm = LoginManager()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
+    app.secret_key = '42'
     db.init_app(app)
+    lm.init_app(app)
     from views import index, verb
+    
+    # register blueprints
     app.register_blueprint(index.blueprint, ur_prefix="")
     app.register_blueprint(verb.blueprint, url_prefix="/verb")
+
+
+    # set login logic
+    public_endpoints = ['index.game']
+
+    def login_valid():
+    	# TODO: stronger validation
+    	return hasattr(current_user, 'email')
+
+    def login_redirect():
+    	if request.endpoint not in public_endpoints:
+    		return redirect(url_for('index.login', next=urllib2.quoteplus(request.url)))
+
+    @app.before_request
+    def _before_request():
+    	if login_valid:
+    		return
+
+    	login_redirect()
+
     return app
 
 #dictionary of verbs
