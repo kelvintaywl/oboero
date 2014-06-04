@@ -1,0 +1,31 @@
+    {% extends "_layout/_base.html" %}
+    {% block content %}
+    <table class="pure-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Teinei</th>
+                <th>Casual</th>
+                <th>Te</th>
+                <th>Potential</th>
+                <th>Conditional</th>
+                <th>Passive</th>
+                <th>Causative</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for v in verbs %}
+            <tr>
+                <td>{{ v.id }}</td>
+                <td>{{ v.teinei }}</td>
+                <td>{{ v.casual }}</td>
+                <td>{{ v.te }}</td>
+                <td>{{ v.potential }}</td>
+                <td>{{ v.conditional }}</td>
+                <td>{{ v.passive }}</td>
+                <td>{{ v.causative }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}

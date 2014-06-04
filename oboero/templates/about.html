@@ -1,0 +1,40 @@
+    {% extends "_layout/_base.html" %}
+    {% block content %}
+	<section id="about">
+		<div class="hero" style="padding-bottom: 50px;">
+			<a href="/" class="image"><img class="logo" src="/static/img/oboero_min.png"></a>
+			<h1>About OBOERO</h1>
+			<p>
+				<dl>
+					<dt>OBOERO 覚えろ</dt>
+					<dd><i>[imperative form]</i> to remember or memorise.<br>When used wisely with an authoritative voice, it may come across as "Why don't you !@#$ remember stuff?"</dd>
+					<br>
+					<dd>A fun-packed Japanese language quiz where verb conjugation champs can pit their skils over their favourite ramen.</dd>
+				</dl>
+				<small>** Built with <a href="http://flask.pocoo.org/">Flask (an awesome Python microframework!)</a>, HTML5, CSS3 and jQuery **</small>
+			</p>
+		</div>
+		<div style="padding-bottom: 50px;">
+			<a class="image profile" href="http://kelvintaywl.tumblr.com" target="_blank"><img class="main logo profile" src="/static/img/face_min.png"></a>
+			<h2>About Kelvin Tay</h2>
+			<p>
+				I love learning languages, I'm just not good at them. That's why I built this for my own amusement.<br><br>Currently working as a mobile application engineer in Tokyo, I guess you can say that I eat, drink and sleep Japanese. Yes, you can address me as Kerubin-san (ケルビンさん)<br><br>
+				If you would like to chat, write me a nice <a href="mailto:kelvintaywl@gmail.com?subject=Oboero+This!">email</a>, or visit <a class="image" href="http://www.tinyurl.com/kelvintaywl"><button>my micro-portfolio</button></a>.<br>
+			</p>
+		</div>
+	</section>
+    {% endblock %}
+	{% block js %}
+	$(document).ready(function(){
+		$('button#submitButton').click(function(){
+			textInput = $('input.answer').val();
+			answer = $('input.answer').attr('data-answer');
+			if(textInput == answer){
+				alert('CONGRATS');
+			}
+			else{
+				alert('LAME');
+			}
+		});
+	});
+    {% endblock %}

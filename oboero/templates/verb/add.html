@@ -1,0 +1,16 @@
+    {% extends "_layout/_base.html" %}
+    {% block content %}
+    <h2>ADD NEW VERB</h2>
+    <form action="{{url_for('verb.new')}}" method="post">
+        <label for="teinei">Teinei Form</label>
+        <input type="text" name="teinei" placeholder="e.g., ">
+        <br>
+        <label for="teinei">Grouping</label>
+        <select name="group">
+            <option value="1">GROUP1: eg., </option>
+            <option value="2">GROUP2: eg., </option>
+            <option value="3">GROUP3: eg., </option>
+        </select>
+        <button type="submit">GO!</button>
+    </form>
+    {% endblock %}
