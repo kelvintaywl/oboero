@@ -109,7 +109,7 @@ def toVolitional(verb):
 
 def toPotential(verb):
     if verb['group'] == 1:
-        newChar = formTable[verb['jap'][-1:]][4] + u'る' # e letter
+        newChar = formTable[verb['jap'][-1:]][3] + u'る' # e letter
         return (verb['jap'][:-1] + newChar)
     elif verb['group'] == 2:
         return (verb['jap'] + u'られる')

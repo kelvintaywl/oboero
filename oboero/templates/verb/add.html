@@ -1,16 +1,36 @@
     {% extends "_layout/_base.html" %}
+
+    {% block css %}
+        .form-cntr {
+            margin-top: 50px;
+            width: 100%;
+        }
+
+        form {
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+    {% endblock %}
+
     {% block content %}
-    <h2>ADD NEW VERB</h2>
-    <form action="{{url_for('verb.new')}}" method="post">
-        <label for="teinei">Teinei Form</label>
-        <input type="text" name="teinei" placeholder="e.g., ">
-        <br>
-        <label for="teinei">Grouping</label>
-        <select name="group">
-            <option value="1">GROUP1: eg., </option>
-            <option value="2">GROUP2: eg., </option>
-            <option value="3">GROUP3: eg., </option>
-        </select>
-        <button type="submit">GO!</button>
+    <div class="form-cntr">
+    <form class="pure-form pure-form-stacked" action="{{url_for('verb.new')}}" method="post">
+        <fieldset>
+            <legend>Add New Verb</legend>
+
+            <label for="teinei">丁寧な形</label>
+            <input id="teinei" type="text" name="teinei" placeholder="e.g., 行き">
+
+            <label for="group">Group</label>
+            <select id="group" name="group">
+                <option value="1">Group 1</option>
+                <option value="2">Group 2</option>
+                <option value="3">Group 3</option>
+            </select>
+
+            <button type="submit" class="pure-button pure-button-primary">Add!</button>
+        </fieldset>
     </form>
+    </div>
     {% endblock %}
