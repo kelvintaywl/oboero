@@ -18,12 +18,12 @@ class VerbService(object):
 
     def get_forms(self, teinei, group):
         verb = {'jap': teinei, 'group': group}
-        casual = toPlain(verb)
-        te = toTe(verb)
-        potential = toPotential(verb)
-        conditional = toConditional(verb)
-        passive = toPassive(verb)
-        causative = toCausative(verb)
+        casual = self.toPlain(verb)
+        te = self.toTe(verb)
+        potential = self.toPotential(verb)
+        conditional = self.toConditional(verb)
+        passive = self.toPassive(verb)
+        causative = self.toCausative(verb)
 
         return (teinei, casual, te, potential, conditional, passive, causative)
 
@@ -46,7 +46,7 @@ class VerbService(object):
                 return (verb['jap'][:-1] + u'する')
     
     def toTe(self, verb):
-        front = toT(verb)
+        front = self.toT(verb)
         return (front + u'で') if verb['jap'][-1:] in [u'ぎ', u'び', u'み'] else (front + u'て')
 
     def toT(self, verb):
