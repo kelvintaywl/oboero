@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, request, redirect, jsonify, url_for
-import random, json, urllib2
+from flask import Flask, render_template, request, redirect, jsonify, url_for, g
+import urllib
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, current_user
@@ -23,22 +23,20 @@ def create_app():
 
 
     # set login logic
-    public_endpoints = ['index.game']
+    public_endpoints = ['index.game', 'index.login', 'index.about', 'verb.list', 'static']
 
     def login_valid():
-    	# TODO: stronger validation
-    	return hasattr(current_user, 'email')
+    	return current_user is not None and current_user.is_authenticated()
 
     def login_redirect():
-    	if request.endpoint not in public_endpoints:
-    		return redirect(url_for('index.login', next=urllib2.quoteplus(request.url)))
+    	return redirect(url_for('index.login', next=urllib.quote_plus(request.url)))
 
     @app.before_request
     def _before_request():
-    	if login_valid:
-    		return
+    	if request.endpoint not in public_endpoints and not login_valid():
+            return login_redirect()
 
-    	login_redirect()
+        return
 
     return app
 

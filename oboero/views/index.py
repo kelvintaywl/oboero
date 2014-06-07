@@ -1,21 +1,22 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import render_template, jsonify, request, redirect, url_for
+from flask import render_template, jsonify, request, redirect, url_for, g
 from flask.blueprints import Blueprint
 from flask.ext.login import login_user, logout_user, current_user
-import random, json, urllib2
+import random, json, urllib2, urllib
 from oboero.models.user import User
 
 blueprint = Blueprint('index', __name__)
 
 @blueprint.route('/')
 def game():
-    verbs = _get_words_from_spreadsheets()
-    for verb in verbs:
-        ran = random.randint(0,8)
-        verb['groupType'] = getForm(ran)
-        verb['answer'] = getWord(verb, ran)
-    return render_template('game.html', verbs=verbs, total=len(verbs))
+
+    # verbs = _get_words_from_spreadsheets()
+    # for verb in verbs:
+        # ran = random.randint(0,8)
+        # verb['groupType'] = getForm(ran)
+        # verb['answer'] = getWord(verb, ran)
+    return render_template('game.html', verbs=[], total=0)
 
 @blueprint.route('/about')
 def about():
@@ -29,7 +30,8 @@ def search():
 def login():
     if request.method == "POST":
         email = request.form['email']
-        user = User(email)
+        user = User.query.get(email)
+        g.user = user
         login_user(user)
         next_url = request.form.get('next_page')
         print(next_url)
@@ -37,7 +39,7 @@ def login():
         if not next_url:
             return redirect(url_for('index.game'))
         else:
-            next_url = urllib2.unquote(next_url)
+            next_url = urllib.unquote(next_url)
             print(next_url)
             return redirect(url_for(next_url))
     else:

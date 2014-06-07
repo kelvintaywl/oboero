@@ -1,8 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from oboero import db
+class User(db.Model):
+    email = db.Column(db.String(120), primary_key=True)
+    name = db.Column(db.String(64), unique=True)
 
-class User(object):
-    # required methods for Flask-login
     def __init__(self, email):
         self.email = email
 
@@ -13,7 +15,10 @@ class User(object):
         return True
 
     def is_anonymous(self):
-        return True
+        return False
 
     def get_id(self):
         return self.email
+
+    def __repr__(self):
+        return '<User %r>' % self.name

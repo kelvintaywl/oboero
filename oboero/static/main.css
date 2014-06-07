@@ -2,6 +2,8 @@ html body {
 color: #000;
 background: #fefefe;
 font-family: 'Quicksand', Arial, sans-serif;
+padding: 0;
+margin: 0;
 }
 
 h1, h2, h3, h4, small {
@@ -21,11 +23,93 @@ body > section {
 height: 100%;
 width: 100%;
 }
-
-section > div.hero {
-background: url('/static/img/geometry.png'); 
-width: 100%;
+section#splash {
 display: block;
+position: absolute;
+top: 0;
+bottom: 0;
+background: url('/static/img/photography.png') top center;
+width: 100%;
+height: 100%;
+}
+
+.floater {
+    float: left;
+    width: 100%;
+    height: 50%;
+    margin-bottom: -120px;
+}
+
+.hexagon-set {
+    clear: both;
+    width: 100%;
+    height: 240px;
+}
+
+.hero {
+    margin: 0 auto;
+    perspective: 1000;
+}
+
+.hero, #logo-back, #logo-front {
+    width: 240px;
+    height: 240px;
+}
+
+.hexagons {
+    width: 240px;
+    height: 240px;
+    position: relative;
+    top: 0;
+    margin: 0 auto;
+    transform-style: preserve-3d;
+    transition: 0.2s ease-in;
+    -webkit-transition: 0.3s ease-in;
+    -moz-transition: 0.3s ease-in;
+}
+
+.hexagon {
+    position: absolute;
+    margin: 0 auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+}
+
+.hero:hover .hexagons {
+    transform: rotateX(180deg);
+    -webkit-transform: rotateX(180deg);
+    -moz-transform: rotateX(180deg);
+}
+
+#logo-front {
+    background: url('img/oboero_min.png') no-repeat;
+    z-index: 2;
+}
+
+#logo-back {
+    background: url('img/start_min.png') no-repeat;
+    transform: rotateX(180deg);
+    -webkit-transform: rotateX(180deg);
+    -moz-transform: rotateX(180deg);
+}
+
+#intro-text {
+    display: block;
+    width: 100%;
+    position: absolute;
+    background: #096;
+    color: #fff;
+    padding-top: 10px;
+    margin: 0 auto;
+    text-align: center;
+    transition: 0.1s;
+    -webkit-transition: 0.1s;
+    -moz-transition: 0.1s;
+}
+
+a {
+    
 }
 
 section#about p, section#about dl, section#about small {
@@ -55,49 +139,7 @@ margin: 0 auto;
 width: 80%;
 }
 
-img.logo {
-display:block; 
-margin: 0 auto;
-}
 
-div.halfling {
-position: relative; 
-display: inline-block; 
-width: 48%;
-}
-
-div.fulling {
-display: block; 
-position: relative; 
-top: -240px; 
-left: -60px; 
-width: 50%;
-}
-
-div.halfling.right {
-float: right;
-}
-
-div.halfling img.leftImage {
-position: relative; 
-float: right; 
-right: -25px; 
-top: -50px;
-}
-
-div.halfling.right img.rightImage {
-position: relative; 
-left: -25px; 
-top: -50px;
-}
-
-.wordText {
-float:right; 
-color: #333; 
-font-size: 4em; 
-text-align: center; 
-margin: 0 auto;
-}
 
 img.main {
 border-radius: 100%;
@@ -106,20 +148,6 @@ border-radius: 100%;
 -khtml-border-radius: 100%;
 }
 
-a.image {
-cursor: pointer;
-}
-
-a:not(.image) {
-text-decoration: none !important;
-color: #333;
-border-bottom: 1px solid #333;
-}
-
-a:not(.image):hover {
-color: #096;
-border-bottom: 1px solid #096;
-}
 
 .pure-g > div {
 box-sizing: border-box; 
