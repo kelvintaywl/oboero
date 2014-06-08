@@ -3,10 +3,11 @@
 from oboero import db
 class User(db.Model):
     email = db.Column(db.String(120), primary_key=True)
-    name = db.Column(db.String(64), unique=True)
+    username = db.Column(db.String(64), unique=True)
 
-    def __init__(self, email):
+    def __init__(self, email, username):
         self.email = email
+        self.username = username
 
     def is_authenticated(self):
         return True

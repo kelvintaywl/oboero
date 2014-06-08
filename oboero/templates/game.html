@@ -1,9 +1,140 @@
     {% extends "_layout/_base.html" %}
+    {% block head %}
+    <script type="text/javascript">
+      (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://plus.google.com/js/client:plusone.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+      })();
+
+
+      var helper = (function() {
+          var authResult = undefined;
+
+          return {
+            /**
+             * Hides the sign-in button and connects the server-side app after
+             * the user successfully signs in.
+             *
+             * @param {Object} authResult An Object which contains the access token and
+             *   other authentication information.
+             */
+            onSignInCallback: function(authResult) {
+              if (authResult['access_token']) {
+                // The user is signed in
+                this.authResult = authResult;
+                helper.connectServer();
+                // After we load the Google+ API, render the profile data from Google+.
+                gapi.client.load('plus','v1',this.renderProfile);
+              } else if (authResult['error']) {
+                // There was an error, which means the user is not signed in.
+                // As an example, you can troubleshoot by writing to the console:
+                console.log('There was an error: ' + authResult['error']);
+                $('#authResult').append('Logged out');
+                $('#gConnect').show();
+              }
+              console.log('authResult', authResult);
+            },
+            /**
+             * Retrieves and renders the authenticated user's Google+ profile.
+             */
+            renderProfile: function() {
+              var request = gapi.client.plus.people.get( {'userId' : 'me'} );
+              request.execute( function(profile) {
+                  $('#profile').empty();
+                  if (profile.error) {
+                    $('#profile').append(profile.error);
+                    return;
+                  }
+                  $('#profile').append(
+                      $('<p><img src=\"' + profile.image.url + '\"></p>'));
+                  $('#profile').append(
+                      $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
+                      profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
+                  if (profile.cover && profile.coverPhoto) {
+                    $('#profile').append(
+                        $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
+                  }
+                });
+                $('#gConnect').hide();
+            },
+            /**
+             * Calls the server endpoint to disconnect the app for the user.
+             */
+            disconnectServer: function() {
+              // Revoke the server tokens
+              $.ajax({
+                type: 'POST',
+                url: "{{url_for('index.logout')}}",
+                async: false,
+                success: function(result) {
+                  console.log('revoke response: ' + result);
+                  $('#gConnect').show();
+                },
+                error: function(e) {
+                  console.log(e);
+                }
+              });
+            },
+            /**
+             * Calls the server endpoint to connect the app for the user. The client
+             * sends the one-time authorization code to the server and the server
+             * exchanges the code for its own tokens to use for offline API access.
+             * For more information, see:
+             *   https://developers.google.com/+/web/signin/server-side-flow
+             */
+            connectServer: function() {
+              console.log(this.authResult.code);
+              $.ajax({
+                type: 'POST',
+                url: '{{url_for('index.login', state=state)}}',
+                contentType: 'application/octet-stream; charset=utf-8',
+                success: function(result) {
+                  console.log(result);
+                  setUpProfilePage();
+                  //window.location.href = "{{ url_for('index.profile') }}";
+                },
+                processData: false,
+                data: this.authResult.code
+              });
+            }
+          };
+        })();
+
+        function onSignInCallback(authResult) {
+          helper.onSignInCallback(authResult);
+        }
+
+        function logout() {
+          helper.disconnectServer();
+        }
+
+        function setUpProfilePage(){
+            $('#splash').remove();
+            $('#profile-page').fadeIn("slow");
+        }
+    </script>
+    {% endblock %}
+
     {% block content %}
 	<section id="splash">
         <div id="intro-text">
             <p>日本語が苦手？ 大丈夫だね! これから、<a href="{{url_for('index.about')}}">「覚えろ」</a></p>
-            <p>Learn Japanese by games and become a Respectable Gaijin!</p>
+            <p>Level up your Japanese by fighting the Grammar Yakuzas. Become a Respectable Gaijin!
+                <div id="gConnect">
+                    <button class="g-signin"
+                        data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read"
+                        data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                        data-clientId="{{ client_id }}"
+                        data-accesstype="offline"
+                        data-callback="onSignInCallback"
+                        data-theme="dark"
+                        data-cookiepolicy="single_host_origin">
+                    </button>
+                </div>
+            </p>
         </div>
         <div class="floater"></div>
             <div class="hexagon-set">
@@ -14,93 +145,63 @@
                 </div>
             </div>
 		</div>
-        <!--
-        <footer class="main">
-			<div class="960">
-                {% if g.user %}
-                <h3>{{ g.user.email }}</h3>
-                {% endif %}
-				<small>What is Oboero? 『覚えろ』について</small><p><a href="http://kelvintaywl.pythonanywhere.com">Kelvin Tay</a> built <a href="{{url_for('index.about')}}">OBOERO</a> whilst cursing at the number of <strong>verb conjugations</strong> Japanese language learners need to commit to memory. He hopes that this mini-game helps Gaijins get better at Nihongo.<br><a href="about" class="image"><button>Read More!</button></a> <a href="{{url_for('index.get_verbs')}}" target="_blank" class="image"><button>Get Words in JSON!</button></a></p>
-			</div>
-		</footer>
-		-->
 	</section>
-    <section id="game">
-		<h1>Welcome, Hero.</h1>
-		<h2>Your Score: <span id="currentScore">-1</span></h2>
-		        {% for verb in verbs %}
-				<form class="pure-form">
-	    			<fieldset>
-	        			<legend>Enter the {{verb['groupType']}} for the word {{verb['jap']}}ます</legend>
-	        			<input class="answer" type="text" data-answer="{{verb['answer']}}" placeholder="{{verb['answer']}}">
-	        			<button id="submitButton" type="submit" class="pure-button pure-button-primary">Submit</button>
-	    			</fieldset>
-				</form>
-				{% endfor %}
+    <section id="profile-page" style="display: none">
+        <nav class="pure-menu pure-menu-open pure-menu-horizontal">
+            <a href="#" class="pure-menu-heading">「覚えろ」</a>
 
-	</section>
-	<section id="list">
-		<ul>
-			{% for tr in verbs %}
-			<li>{{tr['jap']}}ます<small>{{tr['group']}}</small>
-				<ul>
-					<li>PLAIN: {{tr['plain']}}</li>
-					<li>NAI: {{tr['nai']}}</li>
-					<li>TE: {{tr['te']}}</li>
-					<li>COND: {{tr['conditional']}}</li>
-				</ul>
+            <ul>
+                <li><a href="{{ url_for('index.about') }}"><i class="fa fa-cube"></i>&nbsp;About</a></li>
+                <li><a href="http://kelvintaywl.github.com/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
+            </ul>
+        </nav>
+        <div class="pure-g" style="margin-top: 50px;">
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/oboero_2_min.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Kanji Ninja</h4></a>
 
-			</li>
-			{% endfor %}
-		</ul>
-	</section>
+                        <ul>
+                            <li><a><progress max="100" value="50"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/wordcount_min.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Dictionary Master</h4></a>
+
+                        <ul>
+                            <li><a><progress max="100" value="75"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/oboero_min.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Verb Conjugator</h4></a>
+
+                        <ul>
+                            <li><a><progress max="100" value="50"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     {% endblock %}
 	{% block js %}
-	currentScore = -1;
-	localStorage['oboeroScore'] = 250;
-	$(document).ready(function(){
-		$('section:not("#splash")').hide();
-		$('#start').click(function(){
-			$('section#game').show();
-			$(this).scrollTo( $('section#game').offset().top, 200);
-			$('section#splash').fadeOut("fast");
-			//check for local storage
-			if(supports_html5_storage()){
-				currentScore = localStorage['oboeroScore']? parseInt(localStorage['oboeroScore']) : 0;
-				//update char avatar
-				$('#currentScore').text(currentScore);
-			};
-
-		});
-		$('button#submitButton').click(function(){
-			textInput = $('input.answer').val();
-			answer = $('input.answer').attr('data-answer');
-			if(textInput == answer){
-				updateScore(1);
-				alert('CONGRATS');
-			}
-			else{
-				alert('LAME');
-			}
-		});
-	});
-
-	$.fn.scrollTo = function(loc, speed){
-		var ht = parseInt(loc);
-		$('body,html').animate({scrollTop: ht}, speed);
-
-	}
-
-	function supports_html5_storage() {
-	  try {
-	    return 'localStorage' in window && window['localStorage'] !== null;
-	  } catch (e) {
-	    return false;
-	  }
-	}
-
-	function updateScore(incre){
-		currentScore += parseInt(incre);
-		$('#currentScore').text(currentScore);
-	}
+        $(document).ready(function(){
+            $('.hero').click(function(){
+                $('#gConnect button').trigger('click');
+            });
+        });
     {% endblock %}
