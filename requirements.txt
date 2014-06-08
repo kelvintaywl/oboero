@@ -11,5 +11,5 @@ wsgiref==0.1.2
 SQLAlchemy==0.9.4
 google-api-python-client==1.2
 simplekv==0.8.4
-python-gflags=2.0
+python-gflags==2.0
 oauth2client==1.2
