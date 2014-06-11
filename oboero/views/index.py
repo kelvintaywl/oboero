@@ -68,6 +68,7 @@ def login():
         user = User(email=user_email, username=user_email.split('@')[0])
         db.session.add(user)
         db.session.commit()
+    session['user'] = user
     login_user(user)
 
     response = make_response(json.dumps('Logged In!'), 200)

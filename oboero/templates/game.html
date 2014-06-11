@@ -93,8 +93,8 @@
                 contentType: 'application/octet-stream; charset=utf-8',
                 success: function(result) {
                   console.log(result);
-                  setUpProfilePage();
-                  //window.location.href = "{{ url_for('index.profile') }}";
+                  // redirect to user profile page
+                  window.location.href = "{{ url_for('index.profile') }}";
                 },
                 processData: false,
                 data: this.authResult.code
@@ -109,11 +109,6 @@
 
         function logout() {
           helper.disconnectServer();
-        }
-
-        function setUpProfilePage(){
-            $('#splash').remove();
-            $('#profile-page').fadeIn("slow");
         }
     </script>
     {% endblock %}

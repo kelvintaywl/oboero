@@ -1,115 +1,90 @@
 {% extends "_layout/_base.html" %}
 {% block head %}
-    <script type="text/javascript">
-      (function() {
+<script>
+    (function() {
         var po = document.createElement('script');
         po.type = 'text/javascript'; po.async = true;
         po.src = 'https://plus.google.com/js/client:plusone.js';
         var s = document.getElementsByTagName('script')[0];
         s.parentNode.insertBefore(po, s);
-      })();
+    })();
 
-
-      var helper = (function() {
-          var authResult = undefined;
-
-          return {
-            /**
-             * Hides the sign-in button and connects the server-side app after
-             * the user successfully signs in.
-             *
-             * @param {Object} authResult An Object which contains the access token and
-             *   other authentication information.
-             */
-            onSignInCallback: function(authResult) {
-              if (authResult['access_token']) {
-                // The user is signed in
-                this.authResult = authResult;
-                helper.connectServer();
-                // After we load the Google+ API, render the profile data from Google+.
-                gapi.client.load('plus','v1',this.renderProfile);
-              } else if (authResult['error']) {
-                // There was an error, which means the user is not signed in.
-                // As an example, you can troubleshoot by writing to the console:
-                console.log('There was an error: ' + authResult['error']);
-              }
-              console.log('authResult', authResult);
-            },
-            /**
-             * Retrieves and renders the authenticated user's Google+ profile.
-             */
-            renderProfile: function() {
-              var request = gapi.client.plus.people.get( {'userId' : 'me'} );
-              request.execute( function(profile) {
-                  $('#profile').empty();
-                  if (profile.error) {
-                    $('#profile').append(profile.error);
-                    return;
-                  }
-                  $('#profile').append(
-                      $('<p><img src=\"' + profile.image.url + '\"></p>'));
-                  $('#profile').append(
-                      $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-                      profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
-                  if (profile.cover && profile.coverPhoto) {
-                    $('#profile').append(
-                        $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
-                  }
-                });
-            },
-            /**
-             * Calls the server endpoint to disconnect the app for the user.
-             */
-            /**
-             * Calls the server endpoint to connect the app for the user. The client
-             * sends the one-time authorization code to the server and the server
-             * exchanges the code for its own tokens to use for offline API access.
-             * For more information, see:
-             *   https://developers.google.com/+/web/signin/server-side-flow
-             */
-            connectServer: function() {
-              console.log(this.authResult.code);
-              $.ajax({
-                type: 'POST',
-                url: '{{url_for('index.login', state=state)}}',
-                contentType: 'application/octet-stream; charset=utf-8',
-                success: function(result) {
-                  console.log(result);
-                    {% if next_url %}
-                        var next_url = "{{url_for(next_url)}}";
-                    {% else %}
-                        var next_url = "{{url_for('index.profile')}}";
-                    {% endif %}
-                  window.location.href = next_url;
-                },
-                processData: false,
-                data: this.authResult.code
-              });
-            }
-          };
-        })();
-
-        function onSignInCallback(authResult) {
-          helper.onSignInCallback(authResult);
-        }
-    </script>
-    {% endblock %}
+    var request = gapi.client.plus.people.get( {'userId' : '{{session["gplus_id"]}}' } );
+    request.execute( function(profile) {
+                      $('#profile').empty();
+                      if (profile.error) {
+                        $('#profile').append(profile.error);
+                        return;
+                      }
+                      $('#profile').append(
+                          $('<p><img src=\"' + profile.image.url + '\"></p>'));
+                      $('#profile').append(
+                          $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
+                          profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
+                      if (profile.cover && profile.coverPhoto) {
+                        $('#profile').append(
+                            $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
+                      }
+                    });
+</script>
+{% endblock %}
 {% block content %}
-<h1>Welcome {{current_user.username}}</h1>
-<button onclick="signOut()">Sign Out</button>
-<div class="pure-g">
-    <div class="pure-u-md-1-5">
-        <div class="pure-menu pure-menu-open">
-            <a class="pure-menu-heading">Yahoo! Sites</a>
+<section id="profile-page">
+        <nav class="pure-menu pure-menu-open pure-menu-horizontal">
+            <a href="#" class="pure-menu-heading">「覚えろ」</a>
+
             <ul>
-                <li><a href="#">Flickr</a></li>
-                <li><a href="#">Messenger</a></li>
-                <li><a href="#">Sports</a></li>
-                <li><a href="#"><i class="fa fa-cube"></i>Finance</a></li>
+                <li><a href="{{ url_for('index.about') }}"><i class="fa fa-cube"></i>&nbsp;About</a></li>
+                <li><a href="http://github.com/kelvintaywl/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
+                <li><a onclick="logout()"><i class="fa fa-sign-out"></i>&nbsp;logout</a></li>
+                <li> Welcome {{ current_user.username }}</li>
             </ul>
+        </nav>
+        <div class="pure-g" style="margin-top: 50px;">
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/kanji.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Kanji Crush Saga</h4></a>
+
+                        <ul>
+                            <li><a><progress max="100" value="50"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/wordcount_min.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Dictionary Master</h4></a>
+
+                        <ul>
+                            <li><a><progress max="100" value="75"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="pure-u-md-1-3">
+                <div class="placard">
+                    <img src="static/img/verbconju.png">
+                    <div class="pure-menu pure-menu-open">
+                        <a class="pure-menu-heading"><h4>Verb Conjugator</h4></a>
+
+                        <ul>
+                            <li><a><progress max="100" value="50"></progress></a></li>
+                            <li><a href="#">CONTINUE</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+        <!-- NOTE: this is for testing of Google's API client. Re-prettify it soon!
+        ''' -->
+        <div id="profile"></div>
+    </section>
 {% endblock %}
 {% block js %}
     var signOut = function(){
