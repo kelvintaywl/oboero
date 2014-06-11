@@ -125,7 +125,7 @@ box-sizing: border-box;
 }
 
 #profile-page nav {
-height: 40px;
+height: 75px;
 border-bottom: 1px solid #f8f8f8;
 }
 
@@ -162,4 +162,25 @@ background: #09c;
 
 img.profile {
 -webkit-filter: grayscale(100%);
+}
+
+.circular-profile {
+    display: inline;
+	width: 70px;
+	height: 70px;
+	border-radius: 38px;
+	-webkit-border-radius: 38px;
+	-moz-border-radius: 38px;
+
+    z-index: 500000;
+	background: url('img/wtf.jpg') no-repeat;
+
+}
+
+#footerSlideContainer {
+	position: fixed;
+	bottom:0;
+    left: 50%;
+    margin-left: -100px;
+	width: 300px;
 }

@@ -48,15 +48,10 @@
                     $('#profile').append(profile.error);
                     return;
                   }
+                  $('#profile-icon').append(
+                      $('<img src=\"' + profile.image.url + '\" class = "circular-profile">'));
                   $('#profile').append(
-                      $('<p><img src=\"' + profile.image.url + '\"></p>'));
-                  $('#profile').append(
-                      $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-                      profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
-                  if (profile.cover && profile.coverPhoto) {
-                    $('#profile').append(
-                        $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
-                  }
+                      $('<img src=\"' + profile.image.url + '\" class = "circular-profile">'));
                 });
                 $('#gConnect').hide();
             },
@@ -149,11 +144,11 @@
     <section id="profile-page" style="display: none">
         <nav class="pure-menu pure-menu-open pure-menu-horizontal">
             <a href="#" class="pure-menu-heading">「覚えろ」</a>
-
             <ul>
                 <li><a href="{{ url_for('index.about') }}"><i class="fa fa-cube"></i>&nbsp;About</a></li>
                 <li><a href="http://kelvintaywl.github.com/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
             </ul>
+            <div id = "profile-icon" class="pure-menu-heading" style="float: right"></div>
         </nav>
         <div class="pure-g" style="margin-top: 50px;">
             <div class="pure-u-md-1-3">
@@ -194,6 +189,43 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+        <script>
+            jQuery(function($) {
+            var open = false;
+            $('#profile-icon').click(function () {
+                if(open === false) {
+                    $('#footerSlideContent').animate({ height: '300px' });
+                    open = true;
+                } else {
+                    $('#footerSlideContent').animate({ height: '0px' });
+                    open = false;
+                }
+                });
+            });
+        </script>
+        <div id="footerSlideContainer">
+            <div id="footerSlideContent" style="height: 0px;">
+
+                <div id="profile"></div>
+
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <div class="pure-control-group">
+                            <label for="name">Display Name</label>
+                            <input id="name" type="text" placeholder="Username">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="foo">Supercalifragilistic Label</label>
+                            <input id="foo" type="text" placeholder="Enter something here...">
+                        </div>
+                        <div class="pure-controls">
+                            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
         </div>
     </section>
