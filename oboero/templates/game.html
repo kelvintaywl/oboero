@@ -88,8 +88,8 @@
                 contentType: 'application/octet-stream; charset=utf-8',
                 success: function(result) {
                   console.log(result);
-                  setUpProfilePage();
-                  //window.location.href = "{{ url_for('index.profile') }}";
+                  // redirect to user profile page
+                  window.location.href = "{{ url_for('index.profile') }}";
                 },
                 processData: false,
                 data: this.authResult.code
@@ -104,11 +104,6 @@
 
         function logout() {
           helper.disconnectServer();
-        }
-
-        function setUpProfilePage(){
-            $('#splash').remove();
-            $('#profile-page').fadeIn("slow");
         }
     </script>
     {% endblock %}
@@ -146,16 +141,17 @@
             <a href="#" class="pure-menu-heading">「覚えろ」</a>
             <ul>
                 <li><a href="{{ url_for('index.about') }}"><i class="fa fa-cube"></i>&nbsp;About</a></li>
-                <li><a href="http://kelvintaywl.github.com/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
+                <li><a href="http://github.com/kelvintaywl/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
+                <li><a onclick="logout()"><i class="fa fa-sign-out"></i>&nbsp;logout</a></li>
             </ul>
             <div id = "profile-icon" class="pure-menu-heading" style="float: right"></div>
         </nav>
         <div class="pure-g" style="margin-top: 50px;">
             <div class="pure-u-md-1-3">
                 <div class="placard">
-                    <img src="static/img/oboero_2_min.png">
+                    <img src="static/img/kanji.png">
                     <div class="pure-menu pure-menu-open">
-                        <a class="pure-menu-heading"><h4>Kanji Ninja</h4></a>
+                        <a class="pure-menu-heading"><h4>Kanji Crush Saga</h4></a>
 
                         <ul>
                             <li><a><progress max="100" value="50"></progress></a></li>
@@ -179,7 +175,7 @@
             </div>
             <div class="pure-u-md-1-3">
                 <div class="placard">
-                    <img src="static/img/oboero_min.png">
+                    <img src="static/img/verbconju.png">
                     <div class="pure-menu pure-menu-open">
                         <a class="pure-menu-heading"><h4>Verb Conjugator</h4></a>
 
