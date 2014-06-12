@@ -1,36 +1,36 @@
 html body {
-color: #000;
-background: #f8f8f8;
-font-family: 'Quicksand', Arial, sans-serif;
-padding: 0;
-margin: 0;
+    color: #000;
+    background: #f8f8f8;
+    font-family: 'Quicksand', Arial, sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
 h1, h2, h3, h4, small {
-color: #096;
-text-align: center;
+    color: #096;
+    text-align: center;
 }
 
 body {
-background: #fff !important;
+    background: #fff !important;
 }
 
 p {
-line-height: 1.5em;
+    line-height: 1.5em;
 }
 
 body > section {
-height: 100%;
-width: 100%;
+    height: 100%;
+    width: 100%;
 }
 section#splash, section#profile-page {
-display: block;
-position: absolute;
-background: url('/static/img/photography.png') top center;
-top: 0;
-bottom: 0;
-width: 100%;
-height: 100%;
+    display: block;
+    position: absolute;
+    background: url('img/photography.png') top center;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
 }
 
 section#profile-page {
@@ -111,49 +111,49 @@ background: #fff !important;
 }
 
 img.main {
-border-radius: 100%;
--moz-border-radius: 100%;
--webkit-border-radius: 100%;
--khtml-border-radius: 100%;
+    border-radius: 100%;
+    -moz-border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -khtml-border-radius: 100%;
 }
 
 
 .pure-g > div {
-box-sizing: border-box;
--webkit-box-sizing: border-box;
--moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
 #profile-page nav {
-height: 75px;
-border-bottom: 1px solid #f8f8f8;
+    height: 75px;
+    border-bottom: 1px solid #f8f8f8;
 }
 
 .placard {
-background: #f8f8f8;
-padding: 0.3em 1em;
-border-radius: 3px;
-color: #000;
-margin: 10px;
-text-align: center;
+    background: #f8f8f8;
+    padding: 0.3em 1em;
+    border-radius: 3px;
+    color: #000;
+    margin: 10px;
+    text-align: center;
 }
 
 button {
-border: none !important;
-height: 45px;
-background: #096 ;
-border-radius: 3px;
--webkit-border-radius: 3px;
--moz-border-radius: 3px;
--o-border-radius: 3px;
-color: #fff;
-font-size: 0.7em;
-line-height: 1em;
-cursor: pointer;
-transition: 0.25s;
--webkit-transition: 0.25s;
--moz-transition: 0.25s;
--o-transition: 0.25s;
+    border: none !important;
+    height: 45px;
+    background: #096 ;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
+    color: #fff;
+    font-size: 0.7em;
+    line-height: 1em;
+    cursor: pointer;
+    transition: 0.25s;
+    -webkit-transition: 0.25s;
+    -moz-transition: 0.25s;
+    -o-transition: 0.25s;
 }
 
 button:hover {
@@ -179,10 +179,12 @@ img.profile {
 
 #footerSlideContainer {
 	position: fixed;
+    background-color: #ffffff;
 	bottom:0;
     left: 50%;
     margin-left: -100px;
 	width: 300px;
+    z-index: 100;
 }
 
 progress[value] {

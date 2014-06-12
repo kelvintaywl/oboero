@@ -1,32 +1,5 @@
 {% extends "_layout/_base.html" %}
 {% block head %}
-<script>
-    (function() {
-        var po = document.createElement('script');
-        po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://plus.google.com/js/client:plusone.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-
-    var request = gapi.client.plus.people.get( {'userId' : '{{session["gplus_id"]}}' } );
-    request.execute( function(profile) {
-                      $('#profile').empty();
-                      if (profile.error) {
-                        $('#profile').append(profile.error);
-                        return;
-                      }
-                      $('#profile').append(
-                          $('<p><img src=\"' + profile.image.url + '\"></p>'));
-                      $('#profile').append(
-                          $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-                          profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
-                      if (profile.cover && profile.coverPhoto) {
-                        $('#profile').append(
-                            $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
-                      }
-                    });
-</script>
 {% endblock %}
 {% block content %}
 <section id="profile-page">
@@ -39,6 +12,7 @@
                 <li><a onclick="logout()"><i class="fa fa-sign-out"></i>&nbsp;logout</a></li>
                 <li> Welcome {{ current_user.username }}</li>
             </ul>
+            <div id = "profile-icon" class="pure-menu-heading" style="float: right"><img src= "{{  current_user.pic_url }}" class = "circular-profile"></div>
         </nav>
         <div class="pure-g" style="margin-top: 50px;">
             <div class="pure-u-md-1-3">
@@ -84,13 +58,56 @@
         <!-- NOTE: this is for testing of Google's API client. Re-prettify it soon!
         ''' -->
         <div id="profile"></div>
+        <div id="footerSlideContainer">
+            <div id="footerSlideContent" style="height: 0px;">
+
+                <div id="profile"></div>
+
+                <form class="pure-form pure-form-aligned">
+                    <fieldset>
+                        <div class="pure-control-group">
+                            <label for="name">Display Name</label>
+                            <input id="name" type="text" placeholder="Username">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="foo">Supercalifragilistic Label</label>
+                            <input id="foo" type="text" placeholder="Enter something here...">
+                        </div>
+                        <div class="pure-controls">
+                            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
     </section>
 {% endblock %}
 {% block js %}
+    $(document).ready(function() {
+    var open = false;
+    $('#profile-icon').click(function () {
+        if(open === false) {
+            alert("jjjj");
+            $('#footerSlideContent').animate({ height: '300px' });
+            open = true;
+        } else {
+            $('#footerSlideContent').animate({ height: '0px' });
+            open = false;
+        }
+        });
+    });
+
+
+
+    /*
     var signOut = function(){
         gapi.auth.signOut();
         $.ajax({
             type: 'POST',
+            data :{
+                pic-url: "url",
+             },
             url: '{{url_for('index.logout')}}',
             success: function(data){
                 alert(data);
@@ -98,4 +115,5 @@
             }
         });
     };
+    */
 {% endblock %}

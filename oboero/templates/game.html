@@ -27,7 +27,8 @@
                 this.authResult = authResult;
                 helper.connectServer();
                 // After we load the Google+ API, render the profile data from Google+.
-                gapi.client.load('plus','v1',this.renderProfile);
+                gapi.client.load('plus','v1',this.saveProfile);
+
               } else if (authResult['error']) {
                 // There was an error, which means the user is not signed in.
                 // As an example, you can troubleshoot by writing to the console:
@@ -36,24 +37,26 @@
                 $('#gConnect').show();
               }
               console.log('authResult', authResult);
+
             },
             /**
              * Retrieves and renders the authenticated user's Google+ profile.
              */
-            renderProfile: function() {
+            saveProfile: function() {
               var request = gapi.client.plus.people.get( {'userId' : 'me'} );
               request.execute( function(profile) {
-                  $('#profile').empty();
-                  if (profile.error) {
-                    $('#profile').append(profile.error);
-                    return;
-                  }
-                  $('#profile-icon').append(
-                      $('<img src=\"' + profile.image.url + '\" class = "circular-profile">'));
-                  $('#profile').append(
-                      $('<img src=\"' + profile.image.url + '\" class = "circular-profile">'));
-                });
-                $('#gConnect').hide();
+                    $.ajax({
+                        type: 'POST',
+                        data :{
+                            "pic_url": profile.image.url
+                         },
+                        url: "{{url_for('index.save_profile')}}",
+                        success: function(data){
+                            // redirect to user profile page
+                            window.location.href = "{{ url_for('index.profile') }}";
+                        }
+                    });
+              });
             },
             /**
              * Calls the server endpoint to disconnect the app for the user.
@@ -88,8 +91,6 @@
                 contentType: 'application/octet-stream; charset=utf-8',
                 success: function(result) {
                   console.log(result);
-                  // redirect to user profile page
-                  window.location.href = "{{ url_for('index.profile') }}";
                 },
                 processData: false,
                 data: this.authResult.code
@@ -144,7 +145,6 @@
                 <li><a href="http://github.com/kelvintaywl/oboero"><i class="fa fa-github"></i>&nbsp;Github</a></li>
                 <li><a onclick="logout()"><i class="fa fa-sign-out"></i>&nbsp;logout</a></li>
             </ul>
-            <div id = "profile-icon" class="pure-menu-heading" style="float: right"></div>
         </nav>
         <div class="pure-g" style="margin-top: 50px;">
             <div class="pure-u-md-1-3">
@@ -185,43 +185,6 @@
                         </ul>
                     </div>
                 </div>
-            </div>
-        </div>
-        <script>
-            jQuery(function($) {
-            var open = false;
-            $('#profile-icon').click(function () {
-                if(open === false) {
-                    $('#footerSlideContent').animate({ height: '300px' });
-                    open = true;
-                } else {
-                    $('#footerSlideContent').animate({ height: '0px' });
-                    open = false;
-                }
-                });
-            });
-        </script>
-        <div id="footerSlideContainer">
-            <div id="footerSlideContent" style="height: 0px;">
-
-                <div id="profile"></div>
-
-                <form class="pure-form pure-form-aligned">
-                    <fieldset>
-                        <div class="pure-control-group">
-                            <label for="name">Display Name</label>
-                            <input id="name" type="text" placeholder="Username">
-                        </div>
-
-                        <div class="pure-control-group">
-                            <label for="foo">Supercalifragilistic Label</label>
-                            <input id="foo" type="text" placeholder="Enter something here...">
-                        </div>
-                        <div class="pure-controls">
-                            <button type="submit" class="pure-button pure-button-primary">Submit</button>
-                        </div>
-                    </fieldset>
-                </form>
             </div>
         </div>
     </section>
