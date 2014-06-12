@@ -1,1 +1,1 @@
-web: gunicorn oboero:app
+web: gunicorn runserver:app
