@@ -54,9 +54,18 @@ def new():
                             conditional=q_conditional, passive=q_passive, causative=q_causative)
 
     verb.questions.append(question)
-    #db.session.add(verb)
-    #db.session.commit()
+    db.session.add(verb)
+    db.session.commit()
     return redirect(url_for('verb.list'))
 
 
+@blueprint.route('/question')
+def question():
+    # random
+    # testing
+    verb_question = db.session.query(VerbQuestion).get(1);
+    verb_service = VerbService()
+    qn, choices = verb_service.setup_question(verb_question)
+
+    return render_template('verb/question.html', question=qn, choices=choices)
 

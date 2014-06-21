@@ -1,5 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import enum
+
+class VerbForm(enum.Enum):
+    teinei = 1
+    te = 2
+    casual = 3
+    potential = 4
+    conditional = 5
+    passive = 6
+    causative = 7
+
 formTable = {
                     # a - i - u - e - o
             u"い": [u'わ', u'い', u'う', u'え', u'お'],
@@ -157,4 +168,11 @@ class VerbService(object):
             else:
                 return u'される'
 
+    def setup_question(self, verb_question):
+        verb = verb_question.verb
+        choices = {}
+        choices['options'] = [verb.te, verb.teinei, verb.conditional, verb.passive]
+        qn = verb_question.passive.replace("XX", " __ ")
+        choices['answer'] = verb.passive
 
+        return qn, choices

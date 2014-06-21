@@ -1,0 +1,18 @@
+    {% extends "_layout/_base.html" %}
+
+    {% block css %}
+    {% endblock %}
+    {% block js %}
+    {% endblock %}
+    {% block content %}
+    <blockquote>
+        {{ question }}
+    </blockquote>
+    <form>
+        <select name="answer">
+            {% for c in choices['options'] %}
+            <option value="{{ c }}" {% if c == choices['answer'] %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    {% endblock %}
