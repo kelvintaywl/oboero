@@ -1,33 +1,4 @@
 {% extends "_layout/_base.html" %}
-{% block head %}
-<script>
-    (function() {
-        var po = document.createElement('script');
-        po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://plus.google.com/js/client:plusone.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-
-    var request = gapi.client.plus.people.get( {'userId' : '{{session["gplus_id"]}}' } );
-    request.execute( function(profile) {
-                      $('#profile').empty();
-                      if (profile.error) {
-                        $('#profile').append(profile.error);
-                        return;
-                      }
-                      $('#profile').append(
-                          $('<p><img src=\"' + profile.image.url + '\"></p>'));
-                      $('#profile').append(
-                          $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-                          profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
-                      if (profile.cover && profile.coverPhoto) {
-                        $('#profile').append(
-                            $('<p><img src=\"' + profile.cover.coverPhoto.url + '\"></p>'));
-                      }
-                    });
-</script>
-{% endblock %}
 {% block content %}
 <section id="profile-page">
         <nav class="pure-menu pure-menu-open pure-menu-horizontal">
@@ -87,15 +58,4 @@
     </section>
 {% endblock %}
 {% block js %}
-    var signOut = function(){
-        gapi.auth.signOut();
-        $.ajax({
-            type: 'POST',
-            url: '{{url_for('index.logout')}}',
-            success: function(data){
-                alert(data);
-                window.location.href = "{{url_for('index.game')}}";
-            }
-        });
-    };
 {% endblock %}
