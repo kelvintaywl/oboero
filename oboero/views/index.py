@@ -11,22 +11,28 @@ from oboero.models.user import User
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 blueprint = Blueprint('index', __name__)
 
+
 @blueprint.route('/')
 def game():
     state = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz0123456789")
-                         for x in xrange(32))
+                    for x in xrange(32))
+
     session['state'] = state
     client_id = current_app.config['CLIENT_ID']
-    return render_template('game.html', verbs=[], total=0, client_id=client_id, state=state)
+    return render_template('game.html', verbs=[], total=0,
+                           client_id=client_id, state=state)
+
 
 @blueprint.route('/about')
 def about():
     return render_template('about.html')
 
+
 @blueprint.route('/profile')
 def profile():
     assert current_user is not None
     return render_template('profile.html')
+
 
 @blueprint.route('/connect', methods=['POST'])
 def login():
@@ -41,13 +47,16 @@ def login():
     code = request.data
 
     try:
+        g_scopes = ['https://www.googleapis.com/auth/plus.login',
+                    'https://www.googleapis.com/auth/plus.profile.emails.read']
         oauth_flow = flow_from_clientsecrets('client_secrets.json',
-                                             scope='https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read')
+                                             scope=' '.join(g_scopes))
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
 
     except FlowExchangeError:
-        response = make_response(json.dumps('Failed to upgrade authorization code'), 401)
+        response = make_response(
+            json.dumps('Failed to upgrade authorization code'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -75,6 +84,7 @@ def login():
     response = make_response(json.dumps('Logged In!'), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
+
 
 @blueprint.route('/logout', methods=['POST'])
 def logout():
