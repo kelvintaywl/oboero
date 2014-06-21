@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import render_template, jsonify, request, redirect, url_for, g, session, current_app, make_response
+from flask import render_template, request, session, current_app, make_response
 from flask.blueprints import Blueprint
 from flask.ext.login import login_user, logout_user, current_user
-import random, json, urllib2, urllib
+import random
+import json
 
 from .. import db
 from oboero.models.user import User
@@ -12,11 +13,6 @@ blueprint = Blueprint('index', __name__)
 
 @blueprint.route('/')
 def game():
-
-    # redirect user to profile page if already logged in
-    #if current_user is not None and current_user.is_authenticated():
-        #return redirect(url_for('index.profile'))
-
     state = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz0123456789")
                          for x in xrange(32))
     session['state'] = state
@@ -26,6 +22,11 @@ def game():
 @blueprint.route('/about')
 def about():
     return render_template('about.html')
+
+@blueprint.route('/profile')
+def profile():
+    assert current_user is not None
+    return render_template('profile.html')
 
 @blueprint.route('/connect', methods=['POST'])
 def login():
@@ -83,14 +84,7 @@ def logout():
     if session.get('gplus_id'):
         session.pop('gplus_id')
     logout_user()
-
-    print(current_user is None)
+    print(current_user.is_authenticated())
     response = make_response(json.dumps('SIGNED OUT'), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
-
-@blueprint.route('/profile')
-def profile():
-    assert current_user is not None
-    return render_template('profile.html')
-
