@@ -82,7 +82,7 @@ class VerbService(object):
                 return (verb['jap'] + u'ない')
 
     def toProhibitive(self, verb): #dependency: toPlain()
-        return (toPlain(verb) + u'な')
+        return (self.toPlain(verb) + u'な')
 
     def toImperative(self, verb):
         if verb['group'] == 1:
@@ -137,9 +137,9 @@ class VerbService(object):
 
     def toCausative(self, verb):
         if verb['group'] == 1:
-            return (toNai(verb)[:-2] + u'せる')
+            return (self.toNai(verb)[:-2] + u'せる')
         elif verb['group'] == 2:
-            return (toPlain(verb)[:-1] + u'させる')
+            return (self.toPlain(verb)[:-1] + u'させる')
         else:
             if u'来' in verb:
                 return u'こさせる'
@@ -148,9 +148,9 @@ class VerbService(object):
 
     def toPassive(self, verb):
         if verb['group'] == 1:
-            return toNai(verb)[:-2] + u'れる'
+            return self.toNai(verb)[:-2] + u'れる'
         elif verb['group'] == 2:
-            return toPlain(verb)[:-1] + u'られる'
+            return self.toPlain(verb)[:-1] + u'られる'
         else:
             if u'来' in verb:
                 return u'来られる'

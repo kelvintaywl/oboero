@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import render_template, request, redirect, url_for, make_response
+from flask import render_template, request, redirect, url_for, jsonify
 from flask.blueprints import Blueprint
 from .. import db
 from oboero.models.verb import Verb, VerbQuestion
@@ -25,6 +25,7 @@ def conjugate():
     verb_service = VerbService()
     teinei = request.args.get('teinei')
     group = request.args.get('group', type=int)
+
     teinei, casual, te, potential, conditional, passive, causative = \
         verb_service.get_forms(teinei, group)
 
@@ -32,8 +33,7 @@ def conjugate():
             'potential': potential, 'conditional': conditional,
             'passive': passive, 'causative': causative}
 
-    response = make_response(verb, 200)
-    response.headers['Content-Type'] = 'application/json'
+    response = jsonify(verb=verb)
     return response
 
 
@@ -54,8 +54,8 @@ def new():
                             conditional=q_conditional, passive=q_passive, causative=q_causative)
 
     verb.questions.append(question)
-    db.session.add(verb)
-    db.session.commit()
+    #db.session.add(verb)
+    #db.session.commit()
     return redirect(url_for('verb.list'))
 
 

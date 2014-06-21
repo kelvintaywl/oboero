@@ -36,7 +36,8 @@ def create_app():
 
     # set login logic
     public_endpoints = ['index.game', 'index.login',
-                        'index.about', 'verb.list', 'static']
+                        'index.about', 'static',
+                        'verb.list', 'verb.add', 'verb.conjugate', 'verb.new']
 
     def login_valid():
     	return current_user is not None and current_user.is_authenticated()

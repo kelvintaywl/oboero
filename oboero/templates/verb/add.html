@@ -12,7 +12,25 @@
         }
 
     {% endblock %}
-
+    {% block js %}
+        $(document).ready(function(){
+           $('#question_panel').hide();
+           $('#group').change(function(){
+                // fetch all conjugations
+                $.getJSON("{{ url_for('verb.conjugate') }}",
+                            {teinei: $('#masu_form').val(), group: $('#group').val()},
+                            function(data){
+                                var verb = data['verb'];
+                                for(var key in verb){
+                                    $('#' + key).val(verb[key]);
+                                    $('label[for=' + key + ']').text(verb[key]);
+                                };
+                                $('#question_panel').fadeIn();
+                            }
+                );
+            });
+        });
+    {% endblock %}
     {% block content %}
     <div class="form-cntr">
     <form class="pure-form pure-form-stacked" action="{{url_for('verb.new')}}" method="post">
@@ -20,14 +38,45 @@
             <legend>Add New Verb</legend>
 
             <label for="teinei">丁寧な形</label>
-            <input id="teinei" type="text" name="teinei" placeholder="e.g., 行き">
+            <input id="masu_form" type="text" name="masu_form" placeholder="e.g., 行き">
 
             <label for="group">Group</label>
             <select id="group" name="group">
+                <option>--SELECT A GROUP--</option>
                 <option value="1">Group 1</option>
                 <option value="2">Group 2</option>
                 <option value="3">Group 3</option>
             </select>
+
+            <span id="question_panel">
+                <h3>Questions</h3>
+                <label for="teinei"></label>
+                <input type="hidden" name="teinei" id="teinei" value="">
+                <input type="text" class="pure-input-2-3" name="q_teinei" value="">
+
+                <label for="casual"></label>
+                <input type="hidden" name="casual" id="casual" value="">
+                <input type="text" class="pure-input-2-3" name="q_casual" value="">
+
+                <label for="te"></label>
+                <input type="hidden" name="te" id="te" value="">
+                <input type="text" class="pure-input-2-3" name="q_te" value="">
+
+                <label for="potential"></label>
+                <input type="hidden" name="potential" id="potential" value="">
+                <input type="text" class="pure-input-2-3" name="q_potential" value="">
+
+                <label for="conditional"></label>
+                <input type="hidden" name="conditional" id="conditional" value="">
+                <input type="text" class="pure-input-2-3" name="q_conditional" value="">
+
+                <label for="passive"></label>
+                <input type="hidden" name="passive" id="passive" value="">
+                <input type="text" class="pure-input-2-3" name="q_passive" value="">
+
+                <label for="causative"></label>
+                <input type="hidden" name="causative" id="causative" value="">
+                <input type="text" class="pure-input-2-3" name="q_causative" value="">
 
             <button type="submit" class="pure-button pure-button-primary">Add!</button>
         </fieldset>
