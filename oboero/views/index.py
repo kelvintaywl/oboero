@@ -1,31 +1,38 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from flask import render_template, jsonify, request, redirect, url_for, g, session, current_app, make_response
+from flask import render_template, request, session, current_app, make_response
 from flask.blueprints import Blueprint
 from flask.ext.login import login_user, logout_user, current_user
-import random, json, urllib2, urllib
+import random
+import json
 
 from .. import db
 from oboero.models.user import User
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 blueprint = Blueprint('index', __name__)
 
+
 @blueprint.route('/')
 def game():
-
-    # redirect user to profile page if already logged in
-    #if current_user is not None and current_user.is_authenticated():
-        #return redirect(url_for('index.profile'))
-
     state = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz0123456789")
-                         for x in xrange(32))
+                    for x in xrange(32))
+
     session['state'] = state
     client_id = current_app.config['CLIENT_ID']
-    return render_template('game.html', verbs=[], total=0, client_id=client_id, state=state)
+    return render_template('game.html', verbs=[], total=0,
+                           client_id=client_id, state=state)
+
 
 @blueprint.route('/about')
 def about():
     return render_template('about.html')
+
+
+@blueprint.route('/profile')
+def profile():
+    assert current_user is not None
+    return render_template('profile.html')
+
 
 @blueprint.route('/connect', methods=['POST'])
 def login():
@@ -40,13 +47,16 @@ def login():
     code = request.data
 
     try:
+        g_scopes = ['https://www.googleapis.com/auth/plus.login',
+                    'https://www.googleapis.com/auth/plus.profile.emails.read']
         oauth_flow = flow_from_clientsecrets('client_secrets.json',
-                                             scope='https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read')
+                                             scope=' '.join(g_scopes))
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
 
     except FlowExchangeError:
-        response = make_response(json.dumps('Failed to upgrade authorization code'), 401)
+        response = make_response(
+            json.dumps('Failed to upgrade authorization code'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -75,6 +85,7 @@ def login():
     response.headers['Content-Type'] = 'application/json'
     return response
 
+
 @blueprint.route('/logout', methods=['POST'])
 def logout():
     credentials = session.get('credentials')
@@ -83,8 +94,7 @@ def logout():
     if session.get('gplus_id'):
         session.pop('gplus_id')
     logout_user()
-
-    print(current_user is None)
+    print(current_user.is_authenticated())
     response = make_response(json.dumps('SIGNED OUT'), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
@@ -110,3 +120,4 @@ def save_profile():
     response = make_response(json.dumps('PICTURE SAVED'), 200)
     response.headers['Content-Type'] = 'application/json'
     return response
+
