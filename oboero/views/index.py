@@ -33,6 +33,22 @@ def profile():
     assert current_user is not None
     return render_template('profile.html')
 
+@blueprint.route('/save_profile', methods=['POST'])
+def save_profile():
+    _pic_url = request.form.get('pic_url')
+    user_email = request.form.get('user_email', current_user.email)
+    user = db.session.query(User).get(user_email)
+    if not user:
+        user = User(email=user_email, username=user_email.split('@')[0], pic_url=_pic_url.split('?sz')[0] + "?sz=70")
+        db.session.add(user)
+        db.session.commit()
+    elif not user.pic_url:
+        user.pic_url = pic_url=_pic_url.split('?sz')[0] + "?sz=70"
+        db.session.commit()
+    response = make_response(json.dumps('PICTURE SAVED'), 200)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
 
 @blueprint.route('/connect', methods=['POST'])
 def login():
@@ -99,25 +115,4 @@ def logout():
     response.headers['Content-Type'] = 'application/json'
     return response
 
-@blueprint.route('/profile')
-def profile():
-    assert current_user is not None
-    return render_template('profile.html')
-
-
-@blueprint.route('/save_profile', methods=['POST'])
-def save_profile():
-    _pic_url = request.form.get('pic_url')
-    user_email = request.form.get('user_email', current_user.email)
-    user = db.session.query(User).get(user_email)
-    if not user:
-        user = User(email=user_email, username=user_email.split('@')[0], pic_url=_pic_url.split('?sz')[0] + "?sz=70")
-        db.session.add(user)
-        db.session.commit()
-    elif not user.pic_url:
-        user.pic_url = pic_url=_pic_url.split('?sz')[0] + "?sz=70"
-        db.session.commit()
-    response = make_response(json.dumps('PICTURE SAVED'), 200)
-    response.headers['Content-Type'] = 'application/json'
-    return response
 
