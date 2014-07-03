@@ -60,27 +60,18 @@
         <!-- NOTE: this is for testing of Google's API client. Re-prettify it soon!
         ''' -->
         <div id="profile"></div>
-        <div id="footerSlideContainer">
-            <div id="footerSlideContent" style="height: 0px;">
-
-                <div id="profile"></div>
-
-                <form class="pure-form pure-form-aligned">
-                    <fieldset>
-                        <div class="pure-control-group">
-                            <label for="name">Display Name</label>
-                            <input id="name" type="text" placeholder="Username">
-                        </div>
-
-                        <div class="pure-control-group">
-                            <label for="foo">Supercalifragilistic Label</label>
-                            <input id="foo" type="text" placeholder="Enter something here...">
-                        </div>
-                        <div class="pure-controls">
-                            <button type="submit" class="pure-button pure-button-primary">Submit</button>
-                        </div>
-                    </fieldset>
-                </form>
+        <div id="profileDialog">
+            <div id="profileDialogContent">
+                <div style=" display: inline-block; position:relative">
+                    <img src= "{{  current_user.pic_url }}"/>
+                    <div style=" display: inline-block; width: 70px; background-color: powderblue; opacity: 0.7; position:absolute; left: 10px; top: 62px;">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-edit"></i>
+                    </div>
+                </div>
+                <div class="profile-name"> <p contenteditable="true"> {{current_user.username }}</p>&nbsp;<i class="fa fa-edit"></i></div>
+                <div id="profileDialogButton">
+                    <a class="button-small button-success pure-button" href="#"  style="margin-left: 100px">Submit</a>
+                </div>
             </div>
         </div>
     </section>
@@ -88,16 +79,50 @@
 {% block js %}
 
     $(document).ready(function() {
-    var open = false;
-    $('#profile-icon').click(function () {
-        if(open === false) {
-            alert("jjjj");
-            $('#footerSlideContent').animate({ height: '300px' });
-            open = true;
-        } else {
-            $('#footerSlideContent').animate({ height: '0px' });
-            open = false;
-        }
+        var open = false;
+        $("#profileDialogContent").hide();
+        $("#profileDialogButton").hide();
+        $('body').click(function(event) {
+            //Hide the menus if visible
+            if(event.target.id != 'profile-icon' && open == true){
+                $('#profileDialog').animate({
+                    height: '0px'},
+                    200,
+                    function(ctnr){
+                        $("#profileDialogContent").hide();
+                        $("#profileDialogButton").hide();
+                    }
+                );
+                open = false;
+            }
+        });
+
+        $('#profile-icon').click(function (event) {
+            event.stopPropagation();
+            if(!open) {
+                var autoHeight = $('#profileDialogContent').height();
+                $('#profileDialog').animate({
+                    height: autoHeight},
+                    200,
+                    function(ctnr){
+                        $("#profileDialogContent").show();
+                        $("#profileDialogButton").show();
+                    }
+                );
+            } else {
+                $('#profileDialog').animate({
+                    height: '0px'},
+                    200,
+                    function(ctnr){
+                        $("#profileDialogContent").hide();
+                        $("#profileDialogButton").hide();
+                    }
+                );
+            };
+            open = !open;
+        });
+        $('#profileDialog').click(function (event) {
+            event.stopPropagation();
         });
     });
 
