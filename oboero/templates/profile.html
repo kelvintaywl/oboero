@@ -83,7 +83,7 @@
         $("#profileDialogButton").hide();
         $('body').click(function(event) {
             //Hide the menus if visible
-            if(event.target.id != 'profile-icon' && open == true){
+            if(event.target.id != 'profile-icon' && !!open){
                 $('#profileDialog').animate({
                     height: '0px'},
                     200,
@@ -92,7 +92,7 @@
                         $("#profileDialogButton").hide();
                     }
                 );
-                open = !!!open;
+                open = !open;
             }
         });
 
