@@ -198,6 +198,7 @@ img.profile {
 
 #profileDialogButton{
     background-color: whitesmoke;
+    display: block;
 }
 
 #profileDialogContent {
@@ -211,8 +212,9 @@ img.profile {
     padding: 10px;
 }
 
-#profileDialogContent .profile-name {
+#profileDialogContent #profile-name {
     display: inline-block;
+    left: 100px;
     vertical-align: top;
     padding-top: 7px;
 }

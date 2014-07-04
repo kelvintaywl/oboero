@@ -63,13 +63,13 @@
             <div id="profileDialogContent">
                 <div style=" display: inline-block; position:relative">
                     <img src= "{{  current_user.pic_url }}"/>
-                    <div style=" display: inline-block; width: 70px; background-color: powderblue; opacity: 0.7; position:absolute; left: 10px; top: 62px;">
+                   <!--<div style=" display: inline-block; width: 70px; background-color: powderblue; opacity: 0.7; position:absolute; left: 10px; top: 60px;">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-edit"></i>
-                    </div>
+                    </div>-->
                 </div>
-                <div class="profile-name"> <p contenteditable="true"> {{current_user.username }}</p>&nbsp;<i class="fa fa-edit"></i></div>
+                <div id="profile-name"> <p contenteditable="true"> {{current_user.username }}</p>&nbsp;<i class="fa fa-edit"></i></div>
                 <div id="profileDialogButton">
-                    <a class="button-small button-success pure-button" href="#"  style="margin-left: 100px">Submit</a>
+                    <a class="button-small button-success pure-button" href="#" onclick="editProfile();" style="margin-left: 106px">Submit</a>
                 </div>
             </div>
         </div>
@@ -126,7 +126,19 @@
     });
 
 
-
+    function editProfile(){
+        var _new_name = $('#profile-name').children("p").text();
+        $.ajax({
+            type: 'POST',
+            data :{
+                new_name: _new_name,
+             },
+            url: '{{url_for('index.change_name')}}',
+            success: function(data){
+                window.location.href = "{{url_for('index.profile')}}";
+            }
+        });
+    }
     /*
     var signOut = function(){
         gapi.auth.signOut();

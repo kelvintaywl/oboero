@@ -49,6 +49,16 @@ def save_profile():
     response.headers['Content-Type'] = 'application/json'
     return response
 
+@blueprint.route('/change_name', methods=['POST'])
+def change_name():
+    user = db.session.query(User).get(current_user.email)
+    new_username = request.form.get('new_name') or "Incognito"
+    new_username = new_username.strip()
+    user.username = new_username
+    db.session.commit()
+    response = make_response(json.dumps('NAME SAVED'), 200)
+    response.headers['Content-Type'] = 'application/json'
+    return response
 
 @blueprint.route('/connect', methods=['POST'])
 def login():
