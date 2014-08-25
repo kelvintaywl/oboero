@@ -29,15 +29,15 @@ def create_app():
     db.init_app(app)
     lm.init_app(app)
     compress.init_app(app)
-    from views import index, verb
+    from views import index, admin
 
     # register blueprints
     app.register_blueprint(index.blueprint, ur_prefix="")
-    app.register_blueprint(verb.blueprint, url_prefix="/verb")
+    app.register_blueprint(admin.blueprint, url_prefix="/admin")
 
     # set login logic
     public_endpoints = ['index.game', 'index.login',
-                        'index.about', 'verb.list', 'static']
+                        'index.about', 'admin.verb_list', 'static']
 
     def login_valid():
         return current_user is not None and current_user.is_authenticated()
