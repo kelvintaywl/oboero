@@ -4,6 +4,10 @@ from oboero import db
 
 class Verb(db.Model):
     __tablename__ = "verb"
+
+    def __dir__(self):
+        return ["casual", "te", "potential", "conditional", "passive", "causative"]
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     teinei = db.Column(db.String(25), nullable=False)  # ikimasu
     casual = db.Column(db.String(25), nullable=False)  # iku

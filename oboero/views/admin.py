@@ -25,12 +25,7 @@ def verb_new():
     verb_service = VerbService()
     teinei = request.form.get('teinei')
     group = request.form.get('group', type=int)
-    teinei, casual, te, potential, conditional, passive, causative = verb_service.get_forms(teinei, group)
-    print(conditional)
-
-    verb = Verb(teinei=teinei, casual=casual, te=te, potential=potential,
-                conditional=conditional, passive=passive, causative=causative)
-    db.session.add(verb)
+    VerbService().add_word(teinei, group)
     db.session.commit()
     return redirect(url_for('admin.verb_list'))
 

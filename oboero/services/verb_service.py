@@ -1,5 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import random
+from sqlalchemy import func
+from oboero.models.verb import Verb
+from oboero import db
+
 formTable = {
                     # a - i - u - e - o
             u"い": [u'わ', u'い', u'う', u'え', u'お'],
@@ -156,3 +161,25 @@ class VerbService(object):
                 return u'来られる'
             else:
                 return u'される'
+
+    def add_word(self, teinei, group):
+        teinei, casual, te, potential, conditional, passive, causative = \
+            self.get_forms(teinei, group)
+
+        verb = Verb(teinei=teinei, casual=casual, te=te, potential=potential,
+                    conditional=conditional, passive=passive, causative=causative)
+        db.session.add(verb)
+
+    def get_random(self):
+        min_id = db.session.query(func.min(Verb.id))
+        max_id = db.session.query(func.max(Verb.id))
+        verb = None
+        while not verb:
+            try:
+                rand_id = random.randint(min_id, max_id)
+                verb = db.session.query(Verb).get(rand_id)
+            except:
+                verb = None
+
+        rand_attr = random.choice(dir(verb))
+        return verb, rand_attr
