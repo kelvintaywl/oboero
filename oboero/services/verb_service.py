@@ -171,15 +171,14 @@ class VerbService(object):
         db.session.add(verb)
 
     def get_random(self):
-        min_id = db.session.query(func.min(Verb.id))
-        max_id = db.session.query(func.max(Verb.id))
-        verb = None
-        while not verb:
-            try:
-                rand_id = random.randint(min_id, max_id)
-                verb = db.session.query(Verb).get(rand_id)
-            except:
-                verb = None
+        min_id = db.session.query(func.min(Verb.id)).one()[0]
+        max_id = db.session.query(func.max(Verb.id)).one()[0]
 
-        rand_attr = random.choice(dir(verb))
-        return verb, rand_attr
+        rand_id = random.randint(min_id, max_id)
+        print("random; %d" % rand_id)
+        verb = db.session.query(Verb).get(rand_id)
+
+        print(dir(verb))
+
+        form_type = random.choice(dir(verb))
+        return verb, form_type
